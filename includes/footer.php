@@ -2,7 +2,7 @@
     
     <!-- Footer -->
     <footer class="mt-5 py-3 bg-light text-center">
-        <p class="mb-0">&copy; 2024 User Management System. All rights reserved.</p>
+        <p class="mb-0">&copy; User Management System.</p>
     </footer>
     
     <!-- Bootstrap JS -->

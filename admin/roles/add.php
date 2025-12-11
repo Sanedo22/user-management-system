@@ -64,66 +64,119 @@ if(isPostRequest()) {
 include '../../includes/header.php';
 ?>
 
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2><i class="fas fa-plus"></i> Add New Role</h2>
-            <a href="list.php" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Roles List
-            </a>
-        </div>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.header h2 {
+    margin: 0;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input[type="text"], select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.form-text {
+    font-size: 12px;
+    color: #666;
+}
+.text-danger {
+    color: red;
+}
+.button-group {
+    text-align: right;
+    margin-top: 20px;
+}
+.button-group button {
+    margin-left: 10px;
+}
+</style>
+
+<div class="container">
+    <div class="header">
+        <h2>Add New Role</h2>
+        <a href="list.php" class="btn btn-secondary">Back to Roles List</a>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fas fa-user-tag"></i> Role Information</h5>
+    <div>
+        <!-- Display Errors -->
+        <?php displayErrors($errors); ?>
+
+        <!-- Add Role Form -->
+        <form method="POST" action="" id="addRoleForm">
+
+            <!-- CSRF Token -->
+            <?php echo csrfField(); ?>
+
+            <div class="form-group">
+                <label for="name">
+                    Role Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" id="name" name="name"
+                       value="<?php echo htmlspecialchars($name); ?>" required
+                       placeholder="Enter role name">
+                <div class="form-text">The display name for the role.</div>
             </div>
-            <div class="card-body">
 
-                <!-- Display Errors -->
-                <?php displayErrors($errors); ?>
-
-                <!-- Add Role Form -->
-                <form method="POST" action="" id="addRoleForm">
-
-                    <!-- CSRF Token -->
-                    <?php echo csrfField(); ?>
-
-                    <div class="mb-3">
-                        <label for="name" class="form-label">
-                            Role Name <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" class="form-control" id="name" name="name"
-                               value="<?php echo htmlspecialchars($name); ?>" required
-                               placeholder="Enter role name (e.g., Administrator)">
-                        <div class="form-text">The display name for the role.</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="1" <?php echo $status == '1' ? 'selected' : ''; ?>>Active</option>
-                            <option value="0" <?php echo $status == '0' ? 'selected' : ''; ?>>Inactive</option>
-                        </select>
-                        <div class="form-text">Choose whether this role should be active or inactive.</div>
-                    </div>
-
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-secondary me-md-2" onclick="window.location.href='list.php'">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Create Role
-                        </button>
-                    </div>
-
-                </form>
-
+            <div class="form-group">
+                <label for="status">Status <span class="text-danger">*</span></label>
+                <select id="status" name="status" required>
+                    <option value="1" <?php echo $status == '1' ? 'selected' : ''; ?>>Active</option>
+                    <option value="0" <?php echo $status == '0' ? 'selected' : ''; ?>>Inactive</option>
+                </select>
+                <div class="form-text">Choose whether this role should be active or inactive.</div>
             </div>
-        </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='list.php'">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Role</button>
+            </div>
+
+        </form>
+
     </div>
 </div>
 
