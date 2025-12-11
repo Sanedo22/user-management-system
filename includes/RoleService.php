@@ -1,6 +1,6 @@
 <?php
 // include repository
-require_once 'RoleRepository.php';
+require_once 'RolesRepository.php';
 
 // RoleService class - handles business logic and validation
 class RoleService {
