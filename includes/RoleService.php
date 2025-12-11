@@ -236,7 +236,6 @@ class RoleService {
         return $slug;
     }
 
-    // generate unique slug from name (with indexing if needed)
     public function generateUniqueSlug($name, $excludeId = null) {
         // generate base slug
         $baseSlug = $this->generateSlug($name);
@@ -255,8 +254,6 @@ class RoleService {
 
     // check if slug already exists
     private function isSlugExists($slug, $excludeId = null) {
-        // we need to check in the repository if slug exists
-        // since RolesRepository doesn't have this method, we'll add it
         return $this->roleRepository->isSlugExists($slug, $excludeId);
     }
 }
