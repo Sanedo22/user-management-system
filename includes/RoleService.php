@@ -223,17 +223,41 @@ class RoleService {
     public function generateSlug($name) {
         // convert to lowercase
         $slug = strtolower($name);
-        
+
         // replace spaces with hyphens
         $slug = str_replace(' ', '-', $slug);
-        
+
         // remove special characters
         $slug = preg_replace('/[^a-z0-9-]/', '', $slug);
-        
+
         // remove multiple hyphens
         $slug = preg_replace('/-+/', '-', $slug);
-        
+
         return $slug;
+    }
+
+    // generate unique slug from name (with indexing if needed)
+    public function generateUniqueSlug($name, $excludeId = null) {
+        // generate base slug
+        $baseSlug = $this->generateSlug($name);
+
+        // check if base slug is available
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while ($this->isSlugExists($slug, $excludeId)) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
+    // check if slug already exists
+    private function isSlugExists($slug, $excludeId = null) {
+        // we need to check in the repository if slug exists
+        // since RolesRepository doesn't have this method, we'll add it
+        return $this->roleRepository->isSlugExists($slug, $excludeId);
     }
 }
 ?>

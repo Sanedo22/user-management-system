@@ -192,24 +192,47 @@ class RoleRepository {
     
     // check if role name already exists
     public function isNameExists($name, $excludeId = null) {
-        
+
         $query = "SELECT COUNT(*) as total FROM roles WHERE name = :name AND deleted_at IS NULL";
-        
+
         // exclude current role id when updating
         if($excludeId) {
             $query .= " AND id != :id";
         }
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':name', $name);
-        
+
         if($excludeId) {
             $stmt->bindParam(':id', $excludeId);
         }
-        
+
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
+        return $result['total'] > 0;
+    }
+
+    // check if role slug already exists
+    public function isSlugExists($slug, $excludeId = null) {
+
+        $query = "SELECT COUNT(*) as total FROM roles WHERE slug = :slug AND deleted_at IS NULL";
+
+        // exclude current role id when updating
+        if($excludeId) {
+            $query .= " AND id != :id";
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':slug', $slug);
+
+        if($excludeId) {
+            $stmt->bindParam(':id', $excludeId);
+        }
+
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return $result['total'] > 0;
     }
 }
