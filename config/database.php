@@ -4,7 +4,7 @@ class Database {
     
     // database connection variables
     private $host = "localhost";
-    private $database_name = "user_management_system";
+    private $database = "user_management_system";
     private $username = "dhruv";
     private $password = "dhruv123";
     public $conn;
@@ -17,7 +17,7 @@ class Database {
         try {
             // create new PDO connection
             $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->database_name,
+                "mysql:host=" . $this->host . ";dbname=" . $this->database,
                 $this->username,
                 $this->password
             );
