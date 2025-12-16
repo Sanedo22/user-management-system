@@ -78,6 +78,7 @@ $roles = $roleService->getAllRoles(true);
     <h2>Roles</h2>
 
     <a href="add.php" class="btn btn-add">+ Add Role</a>
+    <a href="../users/list.php" class="btn btn-add">Go to Users</a>
 
     <br><br>
 
