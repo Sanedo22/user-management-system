@@ -1,5 +1,6 @@
 <?php
 require_once '../../config/database.php';
+//require_once '../../includes/authMiddleware.php';
 require_once '../../includes/roleService.php';
 
 // get db connection
