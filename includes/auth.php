@@ -5,7 +5,7 @@ session_start();
 
 function requireLogin(){
     if(!isset($_SESSION['user'])){
-        header('Location: /admin/login.php');
+        header('Location: ../../admin/login.php');
         exit();
     }
 }
@@ -14,7 +14,6 @@ function requireRole($roles = []){
     requireLogin();
 
     if(!in_array($_SESSION['user']['role_name'], $roles)){
-        http_response_code(403);
         echo "access denied.";
         exit();
     }

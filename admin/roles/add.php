@@ -1,6 +1,10 @@
 <?php
+require_once '../../includes/auth.php';
+requireLogin();
+requireRole(['Super Admin', 'Admin']);
 require_once '../../config/database.php';
 require_once '../../includes/roleService.php';
+
 
 // db connection
 $dbObj = new Database();
@@ -101,5 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </form>
 
+<?php require_once '../../includes/footer.php'; ?>
 </body>
 </html>

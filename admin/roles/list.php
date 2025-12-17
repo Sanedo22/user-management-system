@@ -1,7 +1,10 @@
 <?php
+require_once '../../includes/auth.php';
+requireLogin();
+requireRole(['Super Admin', 'Admin']);
 require_once '../../config/database.php';
-//require_once '../../includes/authMiddleware.php';
 require_once '../../includes/roleService.php';
+
 
 // get db connection
 $dbObj = new Database();
@@ -21,8 +24,6 @@ $roles = $roleService->getAllRoles(true);
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
-    <?php require_once '../../includes/header.php'; ?>
 
     <style>
         body {
@@ -74,11 +75,13 @@ $roles = $roleService->getAllRoles(true);
 </head>
 
 <body>
+    <?php require_once '../../includes/header.php'; ?>
 
     <h2>Roles</h2>
 
     <a href="add.php" class="btn btn-add">+ Add Role</a>
     <a href="../users/list.php" class="btn btn-add">Go to Users</a>
+    <a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
 
     <br><br>
 

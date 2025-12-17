@@ -1,6 +1,11 @@
 <?php
+require_once '../../includes/auth.php';
+requireLogin();
+requireRole(['Super Admin', 'Admin']);
 require_once '../../config/database.php';
 require_once '../../includes/UserService.php';
+
+
 
 // db connection
 $dbObj = new Database();
@@ -20,8 +25,6 @@ $users = $userService->getAllUsers(true);
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
-    <?php require_once '../../includes/header.php'; ?>
 
     <style>
         body {
@@ -46,11 +49,13 @@ $users = $userService->getAllUsers(true);
     </style>
 </head>
 <body>
+    <?php require_once '../../includes/header.php'; ?>
 
 <h2>Users</h2>
 
 <a href="add.php" class="btn btn-add">+ Add User</a>
 <a href="../roles/list.php" class="btn btn-add">Go to Roles</a>
+<a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
 <br><br>
 
 <table id="usersTable" class="display">

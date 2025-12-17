@@ -1,7 +1,14 @@
 <?php
+require_once '../../includes/auth.php';
+requireLogin();
+requireRole(['Super Admin', 'Admin']);
+
 require_once '../../config/database.php';
 require_once '../../includes/UserService.php';
 require_once '../../includes/roleService.php';
+
+
+
 
 if (!isset($_GET['id'])) {
     header("Location: list.php");

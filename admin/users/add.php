@@ -1,7 +1,12 @@
 <?php
+require_once '../../includes/auth.php';
+requireLogin();
+requireRole(['Super Admin', 'Admin']);
 require_once '../../config/database.php';
 require_once '../../includes/UserService.php';
 require_once '../../includes/RoleService.php';
+
+
 
 //database connection
 $dbObj = new Database();
