@@ -6,10 +6,8 @@ if (!isset($_GET['id'])) {
     header("Location: list.php");
     exit;
 }
-
 $db = (new Database())->getConnection();
 $userService = new UserService($db);
-
-$result = $userService->deleteUser($_GET['id']);
+$result = $userService->restoreUser($_GET['id']);
 header("Location: list.php");
 exit;
