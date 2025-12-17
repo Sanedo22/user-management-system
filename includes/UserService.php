@@ -23,17 +23,18 @@ class UserService
     public function getAllUsers($showDeleted = false)
     {
         if ($showDeleted) {
+            // show ALL users (active + deleted)
             $sql = "SELECT u.*, r.name as role_name 
-                    FROM users u 
-                    LEFT JOIN roles r ON u.role_id = r.id 
-                    WHERE u.deleted_at IS NOT NULL 
-                    ORDER BY u.deleted_at DESC";
+                FROM users u 
+                LEFT JOIN roles r ON u.role_id = r.id 
+                ORDER BY u.id DESC";
         } else {
+            // show ONLY active users
             $sql = "SELECT u.*, r.name as role_name 
-                    FROM users u 
-                    LEFT JOIN roles r ON u.role_id = r.id 
-                    WHERE u.deleted_at IS NULL 
-                    ORDER BY u.id DESC";
+                FROM users u 
+                LEFT JOIN roles r ON u.role_id = r.id 
+                WHERE u.deleted_at IS NULL 
+                ORDER BY u.id DESC";
         }
 
         $db = $this->repo->db;
@@ -41,6 +42,7 @@ class UserService
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     //get one user
     public function getUser($id)

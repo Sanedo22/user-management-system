@@ -1,0 +1,117 @@
+<?php
+require_once '../../config/database.php';
+require_once '../../includes/UserService.php';
+require_once '../../includes/roleService.php';
+
+if (!isset($_GET['id'])) {
+    header("Location: list.php");
+    exit;
+}
+
+$db = (new Database())->getConnection();
+$userService = new UserService($db);
+$roleService = new RoleService($db);
+
+$user = $userService->getUser($_GET['id']);
+if (!$user) {
+    header("Location: list.php");
+    exit;
+}
+
+$roles = $roleService->getAllRoles(false);
+$errors = [];
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $result = $userService->updateUser(
+        $_GET['id'],
+        $_POST['role_id'] ?? null,
+        $_POST['first_name'],
+        $_POST['last_name'],
+        $_POST['email'],
+        $_POST['country_code'],
+        $_POST['phone_number'],
+        $_POST['address'],
+        $_POST['status'],
+        null,
+        $_POST['password'] ?? null
+    );
+    if ($result['success']) {
+        $successMessage = $result['message'];
+        // refresh user data
+        $user = $userService->getUser($user['id']);
+    } else {
+        $errors = $result['errors'];
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit User</title>
+    <?php require_once '../../includes/header.php'; ?>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Edit User</h2>
+    <a href="list.php">← Back to Users List</a>
+    <br><br>
+    <?php if ($errors) {
+        foreach ($errors as $e) echo "<p style='color:red>$e</p>'";
+    } ?>
+    <?php if ($success) echo "<p style='color:green'>$success</p>"; ?>
+
+    <form method="post" action="">
+        <input name="first_name" value="<?= htmlspecialchars($user['first_name']) ?>" required><br><br>
+        <input name="last_name" value="<?= htmlspecialchars($user['last_name']) ?>" required><br><br>
+        <input name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br><br>
+
+        <select name="role_id">
+            <?php foreach ($roles as $r) { ?>
+                <option value="<?= $r['id'] ?>" <?= $user['role_id'] == $r['id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($r['name']) ?>
+                </option>
+            <?php } ?>
+        </select><br><br>
+
+        <input name="country_code" value="<?= htmlspecialchars($user['country_code']) ?>"><br><br>
+        <input name="phone_number" value="<?= htmlspecialchars($user['phone_number']) ?>"><br><br>
+
+        <textarea name="address"><?= htmlspecialchars($user['address']) ?></textarea><br><br>
+
+        <select name="status">
+            <option value="1" <?= $user['status'] == 1 ? 'selected' : '' ?>>Active</option>
+            <option value="0" <?= $user['status'] == 0 ? 'selected' : '' ?>>Inactive</option>
+        </select><br><br>
+
+        <button type="submit">Update</button>
+    </form>
+</body>
+
+</html>
