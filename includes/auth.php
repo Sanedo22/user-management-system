@@ -1,21 +1,22 @@
-<?php   
-if(session_status() == PHP_SESSION_NONE){
-session_start();
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
-function requireLogin(){
-    if(!isset($_SESSION['user'])){
+function requireLogin()
+{
+    if (!isset($_SESSION['user'])) {
         header('Location: ../../admin/login.php');
         exit();
     }
 }
 
-function requireRole($roles = []){
+function requireRole($roles = [])
+{
     requireLogin();
 
-    if(!in_array($_SESSION['user']['role_name'], $roles)){
-        echo "access denied.";
+    if (!in_array($_SESSION['user']['role_name'], $roles)) {
+        header('Location: ../admin/users/dashboard.php');
         exit();
     }
 }
-?>
