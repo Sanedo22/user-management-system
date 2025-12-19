@@ -47,9 +47,25 @@ class AuthService
             'role_name' => $user['role_name']
         ];
 
+        //session security
+        session_regenerate_id(true);
+
+        //trck session time
+        $_SESSION['last_activity'] = time();
+
+        //update last loginat
+        $this->updateLastLogin($user['id']);
+
         return [
             'success' => true
         ];
+    }
+
+    public function updateLastLogin($userId)
+    {
+        $sql = "UPDATE users SET last_login_at = NOW() WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId]);
     }
 
     public function logout()

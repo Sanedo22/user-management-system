@@ -58,6 +58,18 @@ class UserService
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    //get user by email
+    public function getUserByEmail($email)
+    {
+        $sql = "SELECT * FROM users WHERE email = ? AND deleted_at IS NULL";
+        $db = $this->repo->db;
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$email]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     // create user
     public function createUser($role_id, $firstname, $lastname, $email, $password, $countryCode, $phoneNumber, $address, $status, $profileImg = null)
     {
@@ -241,5 +253,55 @@ class UserService
             $errors[] = 'Phone number must be between 7 to 15 digits';
         }
         return $errors;
+    }
+
+    //invalidating old reset links
+    public function invalidateOldPasswordResets($userId)
+    {
+        $sql = "UPDATE password_resets SET used = 1 WHERE user_id = ?";
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$userId]);
+    }
+
+    //password reset token generaton
+    public function createPasswordResetToken($userId, $token, $expireAt)
+    {
+        $sql = "INSERT INTO password_resets(user_id, token, expires_at) VALUES (?, ?, ?)";
+
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+
+        return $stmt->execute([$userId, $token, $expireAt]);
+    }
+
+    //token validation
+    public function getPasswordResetByToken($token)
+    {
+        $sql = "SELECT * FROM password_resets WHERE token = ? AND used = 0 AND expires_at >= NOW()";
+
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$token]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    //update password
+    public function updateUserPassword($userId, $hashedPassword)
+    {
+        $sql = "UPDATE users SET password = ? WHERE id = ?";
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        return $stmt->execute([$hashedPassword, $userId]);
+    }
+
+    //mark token used
+    public function markPasswordResetUsed($resetId)
+    {
+        $sql = "UPDATE password_resets SET used = 1 WHERE id = ?";
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        return $stmt->execute([$resetId]);
     }
 }
