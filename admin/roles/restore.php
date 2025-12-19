@@ -2,7 +2,7 @@
 session_start();
 require_once '../../includes/auth.php';
 requireLogin();
-requireRole(['Super Admin', 'Admin']);
+requireRole(['Super Admin']);
 
 require_once '../../config/database.php';
 require_once '../../includes/roleService.php';

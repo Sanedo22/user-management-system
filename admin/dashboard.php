@@ -3,7 +3,7 @@
     require_once'../includes/AuthService.php';
 
     requireLogin();
-    requireRole(['Super Admin']);
+    requireRole(['Super Admin', 'Admin']);
 
     require_once'../includes/header.php';
 ?>
