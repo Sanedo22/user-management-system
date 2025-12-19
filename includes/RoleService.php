@@ -11,18 +11,19 @@ class RoleService
     }
 
     //get all roles
-    public function getAllRoles($showDeleted = false){
-    if ($showDeleted) {
-        // show all (active + deleted)
-        $sql = "SELECT * FROM roles ORDER BY id DESC";
-        $stmt = $this->repo->db->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    public function getAllRoles($showDeleted = false)
+    {
+        if ($showDeleted) {
+            // show all (active + deleted)
+            $sql = "SELECT * FROM roles ORDER BY id DESC";
+            $stmt = $this->repo->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
-    // only active
-    return $this->repo->getAll();
-}
+        // only active
+        return $this->repo->getAll();
+    }
 
 
     //get one role
@@ -75,6 +76,13 @@ class RoleService
             );
         }
 
+        if ($existing['name'] === 'Super Admin' && (int)$status === 0) {
+            return [
+                'success' => false,
+                'errors' => ['Super Admin role cannot be deactivated']
+            ];
+        }
+
         $errors = $this->validateRole($name, $slug, $status, $id);
         if (count($errors) > 0) {
             return array(
@@ -112,6 +120,13 @@ class RoleService
             );
         }
 
+        if ($existing['name'] === 'Super Admin') {
+            return [
+                'success' => false,
+                'errors' => ['Super Admin role cannot be deleted']
+            ];
+        }
+
         $deleted = $this->repo->delete($id);
         if ($deleted) {
             return array(
@@ -134,6 +149,13 @@ class RoleService
                 'success' => false,
                 'errors' => array('Role not found')
             );
+        }
+
+        if ($existing['name'] === 'Super Admin') {
+            return [
+                'success' => false,
+                'errors' => ['Super Admin role cannot be restored or modified']
+            ];
         }
 
         $restored = $this->repo->restore($id);

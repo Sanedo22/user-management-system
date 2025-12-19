@@ -25,6 +25,17 @@ if (!$user) {
     exit;
 }
 
+$loggedInUser = $_SESSION['user'];
+
+//admin cannot edit super admin
+if (
+    $loggedInUser['role_name'] === 'Admin' &&
+    $user['role_name'] === 'Super Admin'
+) {
+    header("Location: list.php");
+    exit();
+}
+
 $roles = $roleService->getAllRoles(false);
 $errors = [];
 $success = '';
@@ -99,13 +110,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input name="last_name" value="<?= htmlspecialchars($user['last_name']) ?>" required><br><br>
         <input name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br><br>
 
-        <select name="role_id">
-            <?php foreach ($roles as $r) { ?>
-                <option value="<?= $r['id'] ?>" <?= $user['role_id'] == $r['id'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($r['name']) ?>
-                </option>
-            <?php } ?>
-        </select><br><br>
+        <label>Role</label>
+        <?php if ($user['role_name'] === 'Super Admin'): ?>
+            <strong>Super Admin</strong>
+            <input type="hidden" name="role_id" value="<?= $user['role_id'] ?>">
+        <?php else: ?>
+            <select name="role_id">
+                <?php foreach ($roles as $r): ?>
+                    <option value="<?= $r['id'] ?>" <?= $user['role_id'] == $r['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($r['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php endif; ?>
+        <br><br>
 
         <input name="country_code" value="<?= htmlspecialchars($user['country_code']) ?>"><br><br>
         <input name="phone_number" value="<?= htmlspecialchars($user['phone_number']) ?>"><br><br>

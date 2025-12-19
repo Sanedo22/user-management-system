@@ -124,6 +124,24 @@ class UserService
             );
         }
 
+        $sql = "SELECT u.*, r.name AS role_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = ?";
+
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$id]);
+        $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        //RBAC check
+        if (!isset($_SESSION['user']) || !$this->canEditUser($_SESSION['user'], $targetUser)) {
+            return [
+                'success' => false,
+                'errors' => ['You are not allowed to edit this user']
+            ];
+        }
+
         $errors = $this->validateUser($email, $newPassword, $firstname, $lastname, $phoneNumber, $id);
         if (count($errors) > 0) {
             return array(
@@ -164,25 +182,51 @@ class UserService
     //delete user
     public function deleteUser($id)
     {
-        $existing = $this->repo->getOne($id);
-        if (!$existing) {
-            return array(
+        if (!isset($_SESSION['user'])) {
+            return [
                 'success' => false,
-                'errors' => array('User not found')
-            );
+                'errors' => ['Unauthorized']
+            ];
         }
 
-        $deleted = $this->repo->delete($id);
-        if ($deleted) {
-            return array(
+        // Fetch target user with role
+        $sql = "SELECT u.*, r.name AS role_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = ?";
+
+        $db = $this->repo->db;
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$id]);
+        $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$targetUser) {
+            return [
+                'success' => false,
+                'errors' => ['User not found']
+            ];
+        }
+
+        // Check for RBAC
+        if (!$this->canDeleteUser($_SESSION['user'], $targetUser)) {
+            return [
+                'success' => false,
+                'errors' => ['You are not allowed to delete this user']
+            ];
+        }
+
+        // Allow delete
+        if ($this->repo->delete($id)) {
+            return [
                 'success' => true,
                 'message' => 'User deleted successfully'
-            );
+            ];
         }
-        return array(
+
+        return [
             'success' => false,
-            'errors' => array('Failed to delete user')
-        );
+            'errors' => ['Delete failed']
+        ];
     }
 
     //restore user
@@ -303,5 +347,63 @@ class UserService
         $db = $this->repo->db;
         $stmt = $db->prepare($sql);
         return $stmt->execute([$resetId]);
+    }
+
+    //permissions role based
+    private function canDeleteUser($loggedInUser, $targetUser)
+    {
+        $actorRole = $loggedInUser['role_name'];
+        $targetRole = $targetUser['role_name'];
+
+        //Super admin GOD
+        if ($targetRole === 'Super Admin') {
+            return false;
+        }
+
+        if (
+            $actorRole === 'Super Admin' &&
+            $loggedInUser['id'] === $targetUser['id']
+        ) {
+            return false;
+        }
+
+        if ($actorRole === 'Super Admin') {
+            return true;
+        }
+
+        if ($actorRole === 'Admin' && in_array($targetRole, ['Manager', 'User'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    //edit permissions
+    private function canEditUser($loggedInUser, $targetUser)
+    {
+        $actorRole = $loggedInUser['role_name'];
+        $targetRole = $targetUser['role_name'];
+
+        //Nobody edits Super Admin except Super Admin
+        if ($targetRole === 'Super Admin' && $actorRole !== 'Super Admin') {
+            return false;
+        }
+
+        //Admin cannot edit another Admin
+        if ($actorRole === 'Admin' && $targetRole === 'Admin') {
+            return false;
+        }
+
+        //Super Admin can edit anyone
+        if ($actorRole === 'Super Admin') {
+            return true;
+        }
+
+        //Admin can edit Manager & User
+        if ($actorRole === 'Admin' && in_array($targetRole, ['Manager', 'User'])) {
+            return true;
+        }
+
+        return false;
     }
 }
