@@ -51,7 +51,7 @@ class AuthService
 
         $cleansql = "UPDATE user_sessions
                     SET is_active = 0
-                    WHERE last_activity < (NOW() - INTERVAL 5 MINUTE)";
+                    WHERE last_activity < (NOW() - INTERVAL 30 MINUTE)";
         $this->db->prepare($cleansql)->execute();
 
 

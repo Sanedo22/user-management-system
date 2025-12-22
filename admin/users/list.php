@@ -29,62 +29,22 @@ $users = $userService->getAllUsers(true);
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
-
-        .btn {
-            padding: 5px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #fff;
-        }
-
-        .btn-add {
-            background: #2ecc71;
-        }
-
-        .btn-edit {
-            background: #3498db;
-        }
-
-        .btn-delete {
-            background: #e74c3c;
-        }
-
-        .btn-restore {
-            background: #f39c12;
-        }
-
-        .status-active {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-inactive {
-            color: red;
-            font-weight: bold;
-        }
-
-        .deleted {
-            color: #999;
-        }
-    </style>
 </head>
 
 <body>
+    <div class="container">
     <?php require_once '../../includes/header.php'; ?>
 
+    <div class="page-header">
     <h2>Users</h2>
 
     <a href="add.php" class="btn btn-add">+ Add User</a>
     <a href="../roles/list.php" class="btn btn-add">Go to Roles</a>
     <a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
     <br><br>
+    </div>
 
     <table id="usersTable" class="display">
         <thead>

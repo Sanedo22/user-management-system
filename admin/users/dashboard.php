@@ -16,7 +16,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$baseUrl = 'user_management-system/user-management-system'; 
+$baseUrl = '/user_management-system/user-management-system';
 
 $profileImage = !empty($user['profile_img'])
     ? $baseUrl . '/admin/uploads/profiles/' . $user['profile_img']
@@ -24,16 +24,7 @@ $profileImage = !empty($user['profile_img'])
 
 
 // UPDATE PROFILE
-if (isset($_POST['update_profile'])) {
-
-    $first = trim($_POST['first_name']);
-    $last  = trim($_POST['last_name']);
-    $phone = trim($_POST['phone_number']);
-    $addr  = trim($_POST['address']);
-
-    if (!$first || !$last) {
-        $errors[] = 'First and Last name required';
-    }
+if (isset($_POST['upload_image'])) {
 
     $profileImg = $user['profile_img'];
 
@@ -46,10 +37,10 @@ if (isset($_POST['update_profile'])) {
     }
 
     if (!$errors) {
-        $sql = "UPDATE users SET first_name=?, last_name=?, phone_number=?, address=?, profile_img=? WHERE id=?";
+        $sql = "UPDATE users SET profile_img=? WHERE id=?";
         $stmt = $db->prepare($sql);
-        $stmt->execute([$first, $last, $phone, $addr, $profileImg, $userId]);
-        $success = 'Profile updated successfully';
+        $stmt->execute([ $profileImg, $userId]);
+        $success = 'Profile Image Uploaded successfully';
     }
 }
 
@@ -76,63 +67,85 @@ if (isset($_POST['change_password'])) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>User Dashboard</title>
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
+
 <body>
+    <div class="container">
 
-<h2>User Dashboard</h2>
+        <h2 class="dashboard-title">User Dashboard</h2>
 
-<?php if ($errors): ?>
-    <ul style="color:red">
-        <?php foreach ($errors as $e): ?>
-            <li><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+        <?php if ($errors): ?>
+            <div class="alert alert-error">
+                <ul>
+                    <?php foreach ($errors as $e): ?>
+                        <li><?= htmlspecialchars($e) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
 
-<?php if ($success): ?>
-    <p style="color:green"><?= htmlspecialchars($success) ?></p>
-<?php endif; ?>
+        <?php if ($success): ?>
+            <div class="alert alert-success">
+                <p><?= htmlspecialchars($success) ?></p>
+            </div>
+        <?php endif; ?>
 
-<hr>
+        <!-- Profile Picture Section -->
+        <div class="dashboard-section">
+            <h3>Profile Picture</h3>
+            <div class="profile-img-wrapper">
+                <img src="<?= htmlspecialchars($profileImage) ?>"
+                    alt="Profile Image"
+                    class="profile-img">
+            </div>
+        </div>
 
-<h3>Profile Picture</h3>
+        <!-- Edit Profile Section -->
+        <div class="dashboard-section">
+            <h3>Upload Image</h3>
+            <form method="post" enctype="multipart/form-data" class="dashboard-form">
+                <div class="form-group">
+                    <label for="profile_img">Profile Image</label>
+                    <input type="file" id="profile_img" name="profile_img" accept="image/*">
+                </div>
 
-<img src="<?= htmlspecialchars($profileImage) ?>"
-     alt="Profile Image"
-     width="150"
-     height="150"
-     style="border-radius:50%; object-fit:cover; border:1px solid #ccc;">
+                <button type="submit" name="upload_image" class="btn primary">Upload Image</button>
+            </form>
+        </div>
 
-<h3>Edit Profile</h3>
+        <!-- Change Password Section -->
+        <div class="dashboard-section">
+            <h3>Change Password</h3>
+            <form method="post" class="dashboard-form">
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" required>
+                </div>
 
-<form method="post" enctype="multipart/form-data">
-    <input type="text" name="first_name" value="<?= htmlspecialchars($user['first_name']) ?>" required><br><br>
-    <input type="text" name="last_name" value="<?= htmlspecialchars($user['last_name']) ?>" required><br><br>
-    <input type="text" name="phone_number" value="<?= htmlspecialchars($user['phone_number']) ?>"><br><br>
-    <textarea name="address"><?= htmlspecialchars($user['address']) ?></textarea><br><br>
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required>
+                </div>
 
-    <input type="file" name="profile_img"><br><br>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
 
-    <button name="update_profile">Update Profile</button>
-</form>
+                <button type="submit" name="change_password" class="btn primary">Change Password</button>
+            </form>
+        </div>
 
-<hr>
+        <!-- Logout Section -->
+        <div class="dashboard-section">
+            <a href="../logout.php" class="btn danger">Logout</a>
+        </div>
 
-<h3>Change Password</h3>
-
-<form method="post">
-    <input type="password" name="current_password" placeholder="Current Password" required><br><br>
-    <input type="password" name="new_password" placeholder="New Password" required><br><br>
-    <input type="password" name="confirm_password" placeholder="Confirm Password" required><br><br>
-
-    <button name="change_password">Change Password</button>
-</form>
-
-<hr>
-
-<a href="../logout.php">Logout</a>
-
+    </div>
 </body>
+
 </html>

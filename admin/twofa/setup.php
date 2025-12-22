@@ -59,7 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<link rel="stylesheet" href="../../assets/css/form.css">
+<div class="form-container">
+    <div class="form-card">
 <h2>Enable Two-Factor Authentication</h2>
 
 <p>Scan this QR code using Authy / Microsoft / Google Authenticator</p>
@@ -67,10 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <img src="<?= htmlspecialchars($qrUrl) ?>" alt="QR Code">
 
 <form method="post">
+    <div class="form-group">
     <input type="text" name="otp" placeholder="6-digit OTP" required>
     <br><br>
-    <button type="submit">Verify & Enable</button>
+    <div class="btn primary"><button class="form-actions" type="submit">Verify & Enable</button></div>
+    </div>
 </form>
+    </div>
+</div>
 
 <?php if ($error): ?>
     <p style="color:red"><?= htmlspecialchars($error) ?></p>

@@ -15,9 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $result = $auth->login($email, $password);
 
-    if(!$result['success']){
+    if (!$result['success']) {
         $errors = $result['errors'];
-    } else if(isset($result['twofa_required'])){
+    } else if (isset($result['twofa_required'])) {
         header('Location: ../../user-management-system/admin/twofa/verify.php');
         exit();
     } else {
@@ -31,35 +31,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <title>Login</title>
+    <link rel="stylesheet" href="../assets/css/auth.css">
+
 </head>
 
 <body>
 
-    <h2>Admin Login</h2>
+    <div class="auth-container">
 
-    <?php if (!empty($errors)) { ?>
-        <ul style="color:red;">
-            <?php foreach ($errors as $error) { ?>
-                <li><?php echo $error; ?></li>
-            <?php } ?>
-        </ul>
-    <?php } ?>
+        <h2>Admin Login</h2>
 
-    <form method="post">
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password" placeholder="Password" required><a href="forget_password.php">Forgot Password?</a>
-        <br><br>
-        <button type="submit">Login</button>
-        <?php if (isset($_GET['reset']) && $_GET['reset'] === 'success'): ?>
-            <p style="color: green;">Password reset successful. Please login.</p>
-        <?php endif; ?>
-        <?php if (isset($_GET['timeout'])): ?>
-            <p style="color:red;">Session expired. Please login again.</p>
-        <?php endif; ?>
+        <?php if (!empty($errors)) { ?>
+            <div class="auth-errors">
+                <ul style="color:red;">
+                    <?php foreach ($errors as $error) { ?>
+                        <li><?php echo $error; ?></li>
+                    <?php } ?>
+                </ul>
+            </div>
+        <?php } ?>
+
+        <form method="post">
+            <input type="email" name="email" placeholder="Email" required><br><br>
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="auth-links">
+                <a href="forget_password.php">Forgot Password?</a>
+            </div>
+            <br><br>
+            <button type="submit">Login</button>
+            <?php if (isset($_GET['reset']) && $_GET['reset'] === 'success'): ?>
+                <p style="color: green;">Password reset successful. Please login.</p>
+            <?php endif; ?>
+            <?php if (isset($_GET['timeout'])): ?>
+                <p style="color:red;">Session expired. Please login again.</p>
+            <?php endif; ?>
 
 
-    </form>
+        </form>
 
+    </div>
 </body>
 
 </html>

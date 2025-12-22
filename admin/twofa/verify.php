@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email'     => $user['email'],
                 'role_id'   => $user['role_id'],
                 'role_name' => $user['role_name'],
-                'twofa_enabled' => $user['twofa_enabled']
+                'twofa_enabled' => 1
             ];
 
             $_SESSION['last_activity'] = time();
@@ -82,14 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<link rel="stylesheet" href="../../assets/css/form.css">
+<div class="form-container">
+    <div class="form-card">
 <h2>Two-Factor Authentication</h2>
 
 <form method="post">
+    <div class="form-group">
     <input type="text" name="otp" placeholder="6-digit OTP" required>
     <br><br>
     <button type="submit">Verify</button>
+    </div>
 </form>
+    </div>
+</div>
 
 <?php if ($error): ?>
     <p style="color:red"><?= htmlspecialchars($error) ?></p>

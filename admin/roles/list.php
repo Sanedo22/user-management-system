@@ -24,66 +24,20 @@ $roles = $roleService->getAllRoles(true);
 
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
-    <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
-
-        .btn {
-            padding: 5px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .btn-add {
-            background: #2ecc71;
-            color: #fff;
-        }
-
-        .btn-edit {
-            background: #3498db;
-            color: #fff;
-        }
-
-        .btn-delete {
-            background: #e74c3c;
-            color: #fff;
-        }
-
-        .btn-restore {
-            background: #f39c12;
-            color: #fff;
-        }
-
-        .status-active {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-inactive {
-            color: red;
-            font-weight: bold;
-        }
-
-        .deleted {
-            color: #999;
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
 
 <body>
+    <div class="container">
     <?php require_once '../../includes/header.php'; ?>
 
-    <h2>Roles</h2>
-
-    <a href="add.php" class="btn btn-add">+ Add Role</a>
-    <a href="../users/list.php" class="btn btn-add">Go to Users</a>
-    <a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
-
-    <br><br>
+    <div class="page-header">
+        <h2>Roles</h2>
+        <a href="add.php" class="btn btn-add">+ Add Role</a>
+        <a href="../users/list.php" class="btn btn-add">Go to Users</a>
+        <a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
+        <br><br>
+    </div>
 
     <table id="rolesTable" class="display">
         <thead>
@@ -204,6 +158,7 @@ $roles = $roleService->getAllRoles(true);
     <?php unset($_SESSION['swal']);
     } ?>
 
+    </div>
 </body>
 
 </html>

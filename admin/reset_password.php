@@ -19,6 +19,10 @@ if (!$resetData) {
 }
 ?>
 
+<head>
+    <link rel="stylesheet" href="../assets/css/auth.css">
+</head>
+<div class="auth-container">
 <h2> Reset Password </h2>
 
 <form method="post" action="reset_password_process.php">
@@ -31,4 +35,9 @@ if (!$resetData) {
     <input type="password" name="confirm_password" required><br><br>
 
     <button type="submit">Reset Password</button>
+
+    <div class="auth-links">
+        <a href="login.php">Back to login</a>
+    </div>
 </form>
+</div>
