@@ -15,11 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $result = $auth->login($email, $password);
 
-    if ($result['success']) {
-        header('Location: dashboard.php');
-        exit;
-    } else {
+    if(!$result['success']){
         $errors = $result['errors'];
+    } else if(isset($result['twofa_required'])){
+        header('Location: ../../user-management-system/admin/twofa/verify.php');
+        exit();
+    } else {
+        header('Location: dashboard.php');
+        exit();
     }
 }
 ?>
