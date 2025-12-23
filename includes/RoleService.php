@@ -211,4 +211,17 @@ class RoleService
         $slug = preg_replace('/-+/', '-', $slug);
         return rtrim($slug, '-');
     }
+
+    public function isRoleAssignedToUsers($roleId)
+    {
+        $sql = "SELECT COUNT(*) 
+            FROM users 
+            WHERE role_id = ? 
+            AND deleted_at IS NULL";
+
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$roleId]);
+
+        return $stmt->fetchColumn() > 0;
+    }
 }

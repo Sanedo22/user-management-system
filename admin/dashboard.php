@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once '../includes/auth.php';
 requireLogin();
 requireRole(['Admin', 'Super Admin']);
@@ -20,10 +20,12 @@ $twofaEnabled = (int)$stmt->fetchColumn();
 
     <!-- MAIN ACTION CARDS -->
     <div class="dashboard-cards">
-        <a href="roles/list.php" class="dash-card">
-            <span class="dash-title">Roles</span>
-            <span class="dash-desc">Create & manage roles</span>
-        </a>
+        <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
+            <a href="roles/list.php" class="dash-card">
+                <span class="dash-title">Roles</span>
+                <span class="dash-desc">Create & manage roles</span>
+            </a>
+        <?php endif; ?>
 
         <a href="users/list.php" class="dash-card">
             <span class="dash-title">Users</span>

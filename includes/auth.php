@@ -8,6 +8,12 @@ require_once __DIR__ . '/../config/database.php';
 function requireLogin()
 {
     if (!isset($_SESSION['user'])) {
+
+        $_SESSION['swal'] = [
+            'icon' => 'warning',
+            'title' => 'Login Required',
+            'text' => 'Please login to continue'
+        ];
         header('Location: ../../admin/login.php');
         exit();
     }
@@ -23,7 +29,13 @@ function requireLogin()
     if (!$session) {
         session_unset();
         session_destroy();
-        header('Location: ../../admin/login.php?session_expired=1');
+
+        $_SESSION['swal'] = [
+            'icon'  => 'warning',
+            'title' => 'Session Expired',
+            'text'  => 'Your session has expired. Please login again.'
+        ];
+        header('Location: ../../admin/login.php');
         exit();
     }
 
@@ -40,7 +52,16 @@ function requireRole($roles = [])
     requireLogin();
 
     if (!in_array($_SESSION['user']['role_name'], $roles)) {
-        header('Location: ../admin/users/dashboard.php');
+        $_SESSION = [
+            'icon'  => 'error',
+            'title' => 'Access Denied',
+            'text'  => 'You do not have permission to access this page'
+        ];
+        if ($_SESSION['user']['role_name'] === 'User') {
+            header('Location: ../../admin/users/dashboard.php');
+        } else {
+            header('Location: ../../admin/dashboard.php');
+        }
         exit();
     }
 }
