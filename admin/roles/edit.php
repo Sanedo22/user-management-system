@@ -1,8 +1,12 @@
 <?php
-require_once '../../config/database.php';
-require_once '../../includes/roleService.php';
+require_once '../../includes/repo/auth.php';
+requireLogin();
+requireRole(['Super Admin']);
 
-// check id
+require_once '../../config/database.php';
+require_once '../../includes/services/RoleService.php';
+
+// validate id
 if (!isset($_GET['id'])) {
     header('Location: list.php');
     exit;
@@ -24,103 +28,124 @@ if (!$role) {
     exit;
 }
 
-$errors = [];
-$successMsg = '';
+// protect Super Admin role
+if ($role['name'] === 'Super Admin') {
+    $_SESSION['swal'] = [
+        'icon'  => 'error',
+        'title' => 'Action Not Allowed',
+        'text'  => 'Super Admin role cannot be modified'
+    ];
+    header('Location: list.php');
+    exit;
+}
+
+// field errors
+$fieldErrors = [];
+
+// preserve values
+$name   = $role['name'];
+$status = $role['status'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $name = trim($_POST['name']);
-    $status = $_POST['status'];
+    $name   = trim($_POST['name'] ?? '');
+    $status = $_POST['status'] ?? $role['status'];
 
-    // regenerate slug internally
-    $slug = $roleService->generateSlug($name);
+    if ($name === '') {
+        $fieldErrors['name'] = 'Role name is required';
+    }
 
-    $result = $roleService->updateRole($id, $name, $slug, $status);
+    if (empty($fieldErrors)) {
 
-    if ($result['success']) {
-        $successMsg = $result['message'];
-        // refresh data
-        $role = $roleService->getRole($id);
-    } else {
-        $errors = $result['errors'];
+        // regenerate slug internally
+        $slug = $roleService->generateSlug($name);
+
+        $result = $roleService->updateRole($id, $name, $slug, $status);
+
+        if ($result['success']) {
+
+            $_SESSION['swal'] = [
+                'icon'  => 'success',
+                'title' => 'Role Updated',
+                'text'  => $result['message']
+            ];
+
+            header('Location: list.php');
+            exit;
+
+        } else {
+            foreach ($result['errors'] as $error) {
+                if (stripos($error, 'name') !== false) {
+                    $fieldErrors['name'] = $error;
+                } else {
+                    $fieldErrors['general'][] = $error;
+                }
+            }
+        }
     }
 }
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Edit Role</title>
+    <link rel="stylesheet" href="../../assets/css/form.css">
+    <?php require_once '../../includes/header.php'; ?>
     <style>
-        body {
-            font-family: Arial;
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        input, select {
-            padding: 8px;
-            width: 300px;
-        }
-        .btn {
-            padding: 8px 15px;
-            background: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-        }
-        .error {
+        .field-error {
             color: red;
-        }
-        .success {
-            color: green;
+            font-size: 13px;
+            margin-top: 4px;
         }
     </style>
 </head>
+
 <body>
 
-<h2>Edit Role</h2>
+<div class="form-container">
+    <div class="form-card">
 
-<a href="list.php">← Back to list</a>
-<br><br>
+        <h2>Edit Role</h2>
 
-<?php if (!empty($errors)) { ?>
-    <div class="error">
-        <ul>
-            <?php foreach ($errors as $error) { ?>
-                <li><?php echo $error; ?></li>
-            <?php } ?>
-        </ul>
+        <a href="list.php">← Back to list</a>
+        <br><br>
+
+        <?php if (!empty($fieldErrors['general'])): ?>
+            <div class="field-error">
+                <?php foreach ($fieldErrors['general'] as $err): ?>
+                    <?= htmlspecialchars($err) ?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post">
+
+            <div class="form-group">
+                <label>Role Name</label><br>
+                <input type="text" name="name" value="<?= htmlspecialchars($name) ?>">
+                <?php if (isset($fieldErrors['name'])): ?>
+                    <div class="field-error"><?= htmlspecialchars($fieldErrors['name']) ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label><br>
+                <select name="status">
+                    <option value="1" <?= ($status == 1) ? 'selected' : '' ?>>Active</option>
+                    <option value="0" <?= ($status == 0) ? 'selected' : '' ?>>Inactive</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Update Role</button>
+            </div>
+        </form>
+
     </div>
-<?php } ?>
+</div>
 
-<?php if ($successMsg) { ?>
-    <div class="success"><?php echo $successMsg; ?></div>
-<?php } ?>
-
-<form method="post">
-
-    <div class="form-group">
-        <label>Role Name</label><br>
-        <input type="text" name="name" 
-               value="<?php echo htmlspecialchars($role['name']); ?>" required>
-    </div>
-
-    <div class="form-group">
-        <label>Status</label><br>
-        <select name="status">
-            <option value="1" <?php if ($role['status'] == 1) echo 'selected'; ?>>
-                Active
-            </option>
-            <option value="0" <?php if ($role['status'] == 0) echo 'selected'; ?>>
-                Inactive
-            </option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn">Update Role</button>
-
-</form>
-
+<?php require_once '../../includes/footer.php'; ?>
 </body>
+
 </html>

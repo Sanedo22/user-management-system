@@ -1,0 +1,586 @@
+/* ============================================
+   ADMIN DASHBOARD & USERS LIST - COMPLETE CSS
+   ============================================ */
+
+/* ============================================
+   GENERAL STYLES
+   ============================================ */
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ============================================
+   DASHBOARD PAGE STYLES
+   ============================================ */
+
+/* Dashboard Title */
+.dashboard-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 30px 0;
+    text-align: center;
+}
+
+/* Dashboard Cards Grid */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Individual Card */
+.dash-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 30px;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dash-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dash-card:hover::before {
+    opacity: 1;
+}
+
+/* Danger Card Variant */
+.dash-card.danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Card Title */
+.dash-title {
+    font-size: 24px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+/* Card Description */
+.dash-desc {
+    font-size: 14px;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.dashboard-section h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* Two-Factor Authentication Box */
+.twofa-box {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 25px;
+    border: 1px solid #dee2e6;
+}
+
+/* 2FA Status Messages */
+.twofa-enabled,
+.twofa-disabled {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.twofa-enabled {
+    background-color: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.twofa-disabled {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+/* Form Styling in 2FA Box */
+.twofa-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+}
+
+.twofa-box label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.twofa-box input[type="password"] {
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.twofa-box input[type="password"]:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* ============================================
+   USERS LIST PAGE STYLES
+   ============================================ */
+
+/* Page Header */
+.page-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.page-header h2 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Status Badges */
+.status-active,
+.status-inactive {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* DataTables Customization */
+#usersTable {
+    width: 100% !important;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#usersTable thead {
+    background-color: #f8f9fa;
+}
+
+#usersTable thead th {
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+#usersTable tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+#usersTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Deleted User Row Styling */
+#usersTable tbody tr.deleted {
+    background-color: #fff3cd;
+    opacity: 0.85;
+}
+
+#usersTable tbody tr.deleted:hover {
+    background-color: #ffe69c;
+    opacity: 1;
+}
+
+#usersTable tbody tr.deleted td {
+    color: #856404;
+}
+
+/* DataTables Controls */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 20px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin: 0 5px;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-top: 15px;
+    color: #6c757d;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    padding-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 6px 12px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #2196F3;
+    color: white !important;
+    border-color: #2196F3;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ============================================
+   SHARED BUTTON STYLES
+   ============================================ */
+
+/* Base Button */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* Primary Button */
+.btn.primary,
+.btn-add {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn.primary:hover,
+.btn-add:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Edit Button */
+.btn-edit {
+    background-color: #2196F3;
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-edit:hover {
+    background-color: #0b7dda;
+}
+
+/* Delete Button */
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-delete:hover {
+    background-color: #da190b;
+}
+
+/* Restore Button */
+.btn-restore {
+    background-color: #ff9800;
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-restore:hover {
+    background-color: #e68900;
+}
+
+/* Danger Button */
+.btn.danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn.danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* ============================================
+   USER DASHBOARD PAGE STYLES
+   ============================================ */
+
+/* Alert Messages */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert p {
+    margin: 0;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-error ul li {
+    color: #721c24;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-success p {
+    color: #155724;
+}
+
+/* Profile Image Wrapper */
+.profile-img-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #dee2e6;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dashboard Form */
+.dashboard-form {
+    max-width: 600px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="file"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: inherit;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input[type="file"] {
+    padding: 8px 12px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    /* Dashboard */
+    .dashboard-title {
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .dash-card {
+        padding: 25px;
+    }
+
+    .dash-title {
+        font-size: 20px;
+    }
+
+    .dashboard-section {
+        padding: 20px;
+    }
+
+    .dashboard-section h3 {
+        font-size: 20px;
+    }
+
+    .twofa-box {
+        padding: 20px;
+    }
+
+    .twofa-box form {
+        max-width: 100%;
+    }
+
+    /* Users List */
+    .page-header h2 {
+        font-size: 24px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    #usersTable {
+        font-size: 14px;
+    }
+    
+    #usersTable thead th,
+    #usersTable tbody td {
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Dashboard */
+    .dashboard-title {
+        font-size: 22px;
+    }
+
+    .dash-card {
+        padding: 20px;
+    }
+
+    .dash-title {
+        font-size: 18px;
+    }
+
+    .dash-desc {
+        font-size: 13px;
+    }
+
+    .twofa-enabled,
+    .twofa-disabled {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+}
