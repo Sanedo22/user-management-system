@@ -37,6 +37,16 @@ class Repository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // Fetch only soft-deleted record
+    public function getDeletedById($id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = ? AND deleted_at IS NOT NULL";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
 
 
     // Insert a new record into the table

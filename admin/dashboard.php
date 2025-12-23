@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/auth.php';
+require_once '../includes/repo/auth.php';
 requireLogin();
 requireRole(['Admin', 'Super Admin']);
 require_once '../config/database.php';

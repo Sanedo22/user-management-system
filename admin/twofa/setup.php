@@ -1,9 +1,9 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 
 require_once '../../config/database.php';
-require_once '../../includes/TotpService.php';
+require_once '../../includes/services/TotpService.php';
 
 $db = (new Database())->getConnection();
 $totp = new TotpService();
@@ -108,4 +108,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php require_once '../../includes/swal_render.php'; ?>
+<?php require_once '../../includes/services/swal_render.php'; ?>

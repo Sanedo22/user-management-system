@@ -1,5 +1,5 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 
 require_once '../../config/database.php';
@@ -19,8 +19,8 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 $baseUrl = '/user_management-system/user-management-system';
 
 $profileImage = !empty($user['profile_img'])
-    ? $baseUrl . '/admin/uploads/profiles/' . $user['profile_img']
-    : $baseUrl . '/admin/uploads/profiles/default.png';
+    ? $baseUrl . '../admin/uploads/profiles/' . $user['profile_img']
+    : $baseUrl . '../admin/uploads/profiles/default.png';
 
 
 // UPDATE PROFILE
@@ -39,7 +39,7 @@ if (isset($_POST['upload_image'])) {
     if (!$errors) {
         $sql = "UPDATE users SET profile_img=? WHERE id=?";
         $stmt = $db->prepare($sql);
-        $stmt->execute([ $profileImg, $userId]);
+        $stmt->execute([$profileImg, $userId]);
         $success = 'Profile Image Uploaded successfully';
     }
 }
