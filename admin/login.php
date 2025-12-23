@@ -2,8 +2,8 @@
 session_start();
 
 require_once '../config/database.php';
-require_once '../includes/AuthService.php';
-require_once '../includes/TotpService.php';
+require_once '../includes/services/AuthService.php';
+require_once '../includes/services/TotpService.php';
 
 $db = (new Database())->getConnection();
 $auth = new AuthService($db);
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php require_once '../includes/swal_render.php'; ?>
+<?php require_once '../includes/services/swal_render.php'; ?>
 
 </body>
 </html>

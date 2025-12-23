@@ -1,11 +1,11 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin', 'Admin']);
 
 require_once '../../config/database.php';
-require_once '../../includes/UserService.php';
-require_once '../../includes/RoleService.php';
+require_once '../../includes/services/UserService.php';
+require_once '../../includes/services/RoleService.php';
 
 // database connection
 $dbObj = new Database();
@@ -213,15 +213,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label>Address:</label><br>
                 <textarea name="address"><?= htmlspecialchars($address) ?></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Status:</label><br>
-                <select name="status">
-                    <option value="">-- select status --</option>
-                    <option value="1" <?= ($status === '1') ? 'selected' : '' ?>>Active</option>
-                    <option value="0" <?= ($status === '0') ? 'selected' : '' ?>>Inactive</option>
-                </select>
             </div>
 
             <div class="form-actions">

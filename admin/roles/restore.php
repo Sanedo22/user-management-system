@@ -1,10 +1,10 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin']);
 
 require_once '../../config/database.php';
-require_once '../../includes/roleService.php';
+require_once '../../includes/Services/RoleService.php';
 
 // validate id
 if (!isset($_GET['id'])) {

@@ -1,10 +1,10 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin', 'Admin']);
 
 require_once '../../config/database.php';
-require_once '../../includes/UserService.php';
+require_once '../../includes/services/UserService.php';
 
 // db
 $dbObj = new Database();

@@ -1,5 +1,5 @@
 <?php
-require_once 'repository.php';
+require_once '../../includes/repo/repository.php';
 //require_once '../config/database.php';
 
 class UserService
@@ -405,5 +405,19 @@ class UserService
         }
 
         return false;
+    }
+
+    public function isUserOnline($userId)
+    {
+        $sql = "SELECT COUNT(*)
+            FROM user_sessions
+            WHERE user_id = ?
+            AND is_active = 1
+            AND last_activity >= (NOW() - INTERVAL 30 MINUTE)";
+
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$userId]);
+
+        return $stmt->fetchColumn() > 0;
     }
 }

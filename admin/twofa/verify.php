@@ -7,7 +7,7 @@ if (!isset($_SESSION['pending_2fa_user'])) {
 }
 
 require_once '../../config/database.php';
-require_once '../../includes/TotpService.php';
+require_once '../../includes/services/TotpService.php';
 
 $db = (new Database())->getConnection();
 $totp = new TotpService();

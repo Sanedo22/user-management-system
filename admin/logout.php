@@ -1,5 +1,5 @@
 <?php
-require_once '../includes/AuthService.php';
+require_once '../includes/services/AuthService.php';
 require_once '../config/database.php';
 
 $dbObj = new Database();

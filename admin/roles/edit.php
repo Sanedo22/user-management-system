@@ -1,10 +1,10 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin']);
 
 require_once '../../config/database.php';
-require_once '../../includes/roleService.php';
+require_once '../../includes/services/RoleService.php';
 
 // validate id
 if (!isset($_GET['id'])) {
@@ -51,17 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name   = trim($_POST['name'] ?? '');
     $status = $_POST['status'] ?? $role['status'];
 
-    /* -----------------------------
-       SERVER-SIDE VALIDATION
-    ------------------------------*/
-
     if ($name === '') {
         $fieldErrors['name'] = 'Role name is required';
     }
 
-    /* -----------------------------
-       UPDATE ROLE IF VALID
-    ------------------------------*/
     if (empty($fieldErrors)) {
 
         // regenerate slug internally

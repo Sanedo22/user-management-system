@@ -1,12 +1,12 @@
 <?php
-require_once '../../includes/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin', 'Admin']);
 
 $loggedInUser = $_SESSION['user'];
 
 require_once '../../config/database.php';
-require_once '../../includes/UserService.php';
+require_once '../../includes/services/UserService.php';
 
 // db connection
 $dbObj = new Database();
@@ -39,7 +39,7 @@ $users = $userService->getAllUsers(true);
 
             <a href="add.php" class="btn btn-add">+ Add User</a>
             <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
-            <a href="../roles/list.php" class="btn btn-add">Go to Roles</a>
+                <a href="../roles/list.php" class="btn btn-add">Go to Roles</a>
             <?php endif; ?>
             <a href="../dashboard.php" class="btn btn-add">Go to Dashboard</a>
             <br><br>
@@ -74,11 +74,12 @@ $users = $userService->getAllUsers(true);
                             ?>
                         </td>
                         <td>
-                            <?php if ($user['status'] == 1) { ?>
-                                <span class="status-active">Active</span>
-                            <?php } else { ?>
-                                <span class="status-inactive">Inactive</span>
-                            <?php } ?>
+                            <?php if ($userService->isUserOnline($user['id'])): ?>
+                                <span class="status-active">Online</span>
+                            <?php else: ?>
+                                <span class="status-inactive">Offline</span>
+                            <?php endif; ?>
+
                         </td>
                         <td><?php echo $user['deleted_at'] ? 'Yes' : 'No'; ?></td>
                         <td>

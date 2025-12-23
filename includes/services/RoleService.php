@@ -1,5 +1,5 @@
 <?php
-require_once 'repository.php';
+require_once '../../includes/repo/repository.php';
 class RoleService
 {
 
@@ -143,7 +143,7 @@ class RoleService
     //restore role
     public function restoreRole($id)
     {
-        $existing = $this->repo->getById($id);
+        $existing = $this->repo->getDeletedById($id);
         if (!$existing) {
             return array(
                 'success' => false,

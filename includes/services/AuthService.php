@@ -20,7 +20,7 @@ class AuthService
                 LEFT JOIN roles r ON u.role_id = r.id
                 WHERE u.email = ?
                 AND u.deleted_at IS NULL
-                AND u.status = 1";
+                ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$email]);
@@ -40,9 +40,6 @@ class AuthService
             ];
         }
 
-        /* ---------------------------------
-           CLEAN EXPIRED SESSIONS (USER ONLY)
-        ----------------------------------*/
         $sql = "UPDATE user_sessions
                 SET is_active = 0
                 WHERE user_id = ?
@@ -50,9 +47,6 @@ class AuthService
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$user['id']]);
 
-        /* ---------------------------------
-           CHECK CONCURRENT SESSIONS
-        ----------------------------------*/
         $sql = "SELECT COUNT(*)
                 FROM user_sessions
                 WHERE user_id = ?
@@ -69,9 +63,6 @@ class AuthService
             ];
         }
 
-        /* ---------------------------------
-           2FA FLOW
-        ----------------------------------*/
         if ($user['twofa_enabled']) {
             $_SESSION['pending_2fa_user'] = $user['id'];
 
@@ -81,9 +72,7 @@ class AuthService
             ];
         }
 
-        /* ---------------------------------
-           LOGIN SUCCESS (NO 2FA)
-        ----------------------------------*/
+        //login success
         session_regenerate_id(true);
 
         $_SESSION['user'] = [
