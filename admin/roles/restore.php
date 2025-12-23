@@ -1,55 +1,31 @@
 <?php
-require_once '../../includes/repo/auth.php';
+// auth & RBAC
+require_once __DIR__ . '/../../includes/repo/auth.php';
 requireLogin();
 requireRole(['Super Admin']);
 
-require_once '../../config/database.php';
-require_once '../../includes/Services/RoleService.php';
+// dependencies
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/services/RoleService.php';
 
 // validate id
-if (!isset($_GET['id'])) {
+if (!isset($_GET['id']) || empty($_GET['id'])) {
     header('Location: list.php');
     exit;
 }
 
-$id = $_GET['id'];
+$id = (int) $_GET['id'];
 
 // db connection
-$dbObj = new Database();
-$db = $dbObj->getConnection();
+$db = (new Database())->getConnection();
 
-// role service
+// service
 $roleService = new RoleService($db);
 
-// fetch role (including deleted)
-$role = $roleService->getRole($id);
-
-if (!$role) {
-    $_SESSION['swal'] = [
-        'icon'  => 'error',
-        'title' => 'Not Found',
-        'text'  => 'Role does not exist'
-    ];
-    header('Location: list.php');
-    exit;
-}
-
-//RBAC rules
-// Super Admin role must never be restored
-if ($role['name'] === 'Super Admin') {
-    $_SESSION['swal'] = [
-        'icon'  => 'error',
-        'title' => 'Action Not Allowed',
-        'text'  => 'Super Admin role cannot be restored'
-    ];
-    header('Location: list.php');
-    exit;
-}
-
-
-//restore role
+// restore (ALL validation happens inside service)
 $result = $roleService->restoreRole($id);
 
+// swal response
 if ($result['success']) {
     $_SESSION['swal'] = [
         'icon'  => 'success',
@@ -64,5 +40,6 @@ if ($result['success']) {
     ];
 }
 
+// redirect back
 header('Location: list.php');
 exit;
