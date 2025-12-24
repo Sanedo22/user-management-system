@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // ❌ OTP incorrect
+    //invalid otp
     $_SESSION['swal'] = [
         'icon'  => 'error',
         'title' => 'Invalid OTP',

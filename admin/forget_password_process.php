@@ -17,7 +17,7 @@ $userService = new UserService($db);
 $user = $userService->getUserByEmail($email);
 
 if (!$user) {
-    header('Location: forget_password.php?status=sent');
+    header('Location: forget_password.php?status=not_found');
     exit();
 }
 

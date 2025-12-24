@@ -178,7 +178,7 @@ $users = $userService->getAllUsers(true);
 
         </script>
 
-        <?php require_once '../../includes/footer.php'; ?>
+        <?php include "../../includes/footer.php"; ?>
     </div>
 </body>
 

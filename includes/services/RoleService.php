@@ -45,7 +45,7 @@ class RoleService
         $data = [
             'name'   => $name,
             'slug'   => $slug,
-            'status' => $status
+            'status' => 0
         ];
 
         $id = $this->repo->insert($data);
@@ -215,5 +215,16 @@ class RoleService
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$roleId]);
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function syncRoleStatus($roleId)
+    {
+        $isAssigned = $this->isRoleAssignedToUsers($roleId);
+
+        $status = $isAssigned ? 1 : 0;
+
+        $sql = "UPDATE roles SET status = ? WHERE id = ?";
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$status, $roleId]);
     }
 }

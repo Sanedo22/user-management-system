@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['otp'])) {
         exit();
     }
 
-//Role based rediert
+    //Role based rediert
     $role = $_SESSION['user']['role_name'];
 
     if (in_array($role, ['Super Admin', 'Admin'])) {
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
         $_SERVER['REMOTE_ADDR'] ?? 'Unknown'
     ]);
 
-//After 2fa
+    //After 2fa
     if (in_array($user['role_name'], ['Super Admin', 'Admin'])) {
         header('Location: dashboard.php');
     } else {
@@ -121,35 +121,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="../assets/css/auth.css">
 </head>
+
 <body>
 
-<div class="auth-container">
-    <h2>Admin Login</h2>
+    <div class="auth-container">
+        <h2>Admin Login</h2>
 
-    <?php if (!isset($_SESSION['twofa_stage'])): ?>
-        <!-- NORMAL LOGIN FORM -->
-        <form method="post">
-            <input type="email" name="email" placeholder="Email" required><br><br>
-            <input type="password" name="password" placeholder="Password" required>
-            <br><br> <a href="forget_password.php">Forgot Password?</a>
-            <button type="submit">Login</button>
-        </form>
-    <?php else: ?>
-        <!-- OTP FORM -->
-        <form method="post">
-            <input type="text" name="otp" placeholder="6-digit OTP" required>
-            <br><br>
-            <button type="submit">Verify OTP</button>
-        </form>
-    <?php endif; ?>
-</div>
+        <?php if (!isset($_SESSION['twofa_stage'])): ?>
+            <!-- NORMAL LOGIN FORM -->
+            <form method="post" id="loginForm" novalidate action="login.php">
+                <input type="email" name="email" placeholder="Email"><br><br>
+                <input type="password" name="password" placeholder="Password">
+                <br><br> <a href="forget_password.php">Forgot Password?</a>
+                <button type="submit">Login</button>
+            </form>
+        <?php else: ?>
+            <!-- OTP FORM -->
+            <form method="post" id="otpForm" novalidate>
+                <input type="text" name="otp" placeholder="6-digit OTP">
+                <br><br>
+                <button type="submit">Verify OTP</button>
+            </form>
+        <?php endif; ?>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php require_once '../includes/services/swal_render.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/auth.js"></script>
+    <?php require_once '../includes/services/swal_render.php'; ?>
 
 </body>
+
 </html>

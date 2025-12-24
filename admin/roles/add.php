@@ -110,11 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>Status</label><br>
-                <select name="status">
-                    <option value="1" <?= ($status == '1') ? 'selected' : '' ?>>Active</option>
-                    <option value="0" <?= ($status == '0') ? 'selected' : '' ?>>Inactive</option>
-                </select>
+                <label>Status</label>
+                <small>Inactive</small><br>
+                
             </div>
 
             <div class="form-actions">
