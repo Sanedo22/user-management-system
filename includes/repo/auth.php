@@ -53,7 +53,7 @@ function requireRole($roles = [])
     requireLogin();
 
     if (!in_array($_SESSION['user']['role_name'], $roles)) {
-        $_SESSION = [
+        $_SESSION['swal'] = [
             'icon'  => 'error',
             'title' => 'Access Denied',
             'text'  => 'You do not have permission to access this page'
