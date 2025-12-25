@@ -84,66 +84,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$title = 'Edit Role';
+require_once __DIR__ . '/../../includes/layouts/admin/header.php';
 ?>
-<!DOCTYPE html>
-<html>
 
-<head>
-    <title>Edit Role</title>
-    <link rel="stylesheet" href="../../assets/css/form.css">
-    <?php require_once '../../includes/header.php'; ?>
-    <style>
-        .field-error {
-            color: red;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-    </style>
-</head>
+<div class="container-fluid">
 
-<body>
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Role</h1>
 
-<div class="form-container">
-    <div class="form-card">
-
-        <h2>Edit Role</h2>
-
-        <a href="list.php">← Back to list</a>
-        <br><br>
-
-        <?php if (!empty($fieldErrors['general'])): ?>
-            <div class="field-error">
-                <?php foreach ($fieldErrors['general'] as $err): ?>
-                    <?= htmlspecialchars($err) ?><br>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="post">
-
-            <div class="form-group">
-                <label>Role Name</label><br>
-                <input type="text" name="name" value="<?= htmlspecialchars($name) ?>">
-                <?php if (isset($fieldErrors['name'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['name']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>Status</label>
-                <?php echo "{$status}";?>
-                
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn">Update Role</button>
-            </div>
-        </form>
-
+        <a href="list.php" class="btn btn-dark btn-sm">
+            Back to Roles
+        </a>
     </div>
+
+    <?php if (!empty($fieldErrors['general'])): ?>
+        <div class="alert alert-danger">
+            <?php foreach ($fieldErrors['general'] as $err): ?>
+                <?= htmlspecialchars($err) ?><br>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="card shadow-sm col-lg-6 p-0">
+        <div class="card-body">
+
+            <form method="post">
+
+                <!-- Role Name -->
+                <div class="form-group">
+                    <label>Role Name</label>
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           value="<?= htmlspecialchars($name) ?>">
+                    <?php if (isset($fieldErrors['name'])): ?>
+                        <small class="text-danger"><?= htmlspecialchars($fieldErrors['name']) ?></small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Slug (Info only) -->
+                <div class="form-group">
+                    <label>Slug</label>
+                    <input type="text"
+                           class="form-control"
+                           value="Auto-generated from role name"
+                           disabled>
+                    <small class="text-muted">
+                        Slug will be regenerated automatically if name changes.
+                    </small>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status" class="form-control">
+                        <option value="1" <?= ($status == 1) ? 'selected' : '' ?>>Active</option>
+                        <option value="0" <?= ($status == 0) ? 'selected' : '' ?>>Inactive</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <button type="submit" class="btn btn-primary btn-sm">
+                    Update Role
+                </button>
+
+                <a href="list.php" class="btn btn-secondary btn-sm">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
 </div>
 
-<?php require_once '../../includes/footer.php'; ?>
-</body>
-
-</html>
+<?php require_once __DIR__ . '/../includes/layouts/admin/footer.php';
+ ?>

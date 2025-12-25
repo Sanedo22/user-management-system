@@ -2,6 +2,7 @@
 session_start();
 
 require_once '../config/database.php';
+require_once '../config/constants.php';
 require_once '../includes/services/AuthService.php';
 require_once '../includes/services/TotpService.php';
 
@@ -120,38 +121,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="../assets/css/auth.css">
+
+    <!-- SB Admin 2 CSS -->
+    <link href="<?= BASE_URL ?>assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>assets/css/sb-admin-2.min.css" rel="stylesheet">
+
 </head>
 
-<body>
+<body class="bg-gradient-primary">
 
-    <div class="auth-container">
-        <h2>Admin Login</h2>
+    <div class="container">
 
-        <?php if (!isset($_SESSION['twofa_stage'])): ?>
-            <!-- NORMAL LOGIN FORM -->
-            <form method="post" id="loginForm" novalidate action="login.php">
-                <input type="email" name="email" placeholder="Email"><br><br>
-                <input type="password" name="password" placeholder="Password">
-                <br><br> <a href="forget_password.php">Forgot Password?</a>
-                <button type="submit">Login</button>
-            </form>
-        <?php else: ?>
-            <!-- OTP FORM -->
-            <form method="post" id="otpForm" novalidate>
-                <input type="text" name="otp" placeholder="6-digit OTP">
-                <br><br>
-                <button type="submit">Verify OTP</button>
-            </form>
-        <?php endif; ?>
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-4 col-lg-5 col-md-6">
+
+                <div class="card shadow-lg my-5">
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+                            <h1 class="h4 text-gray-900">
+                                <?= isset($_SESSION['twofa_stage']) ? 'OTP Verification' : 'Admin Login' ?>
+                            </h1>
+                        </div>
+
+                        <?php if (!isset($_SESSION['twofa_stage'])): ?>
+                            <!-- NORMAL LOGIN FORM -->
+                            <form method="post" id="loginForm" novalidate>
+
+                                <div class="form-group">
+                                    <input type="email"
+                                        name="email"
+                                        class="form-control form-control-user"
+                                        placeholder="Email">
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password"
+                                        name="password"
+                                        class="form-control form-control-user"
+                                        placeholder="Password">
+                                </div>
+
+                                <button type="submit"
+                                    class="btn btn-primary btn-user btn-block">
+                                    Login
+                                </button>
+
+                            </form>
+
+                            <div class="text-center mt-3">
+                                <a class="small" href="forget_password.php">
+                                    Forgot Password?
+                                </a>
+                            </div>
+
+                        <?php else: ?>
+                            <!-- OTP FORM -->
+                            <form method="post" id="otpForm" novalidate>
+
+                                <div class="form-group">
+                                    <input type="text"
+                                        name="otp"
+                                        class="form-control form-control-user"
+                                        placeholder="6-digit OTP">
+                                </div>
+
+                                <button type="submit"
+                                    class="btn btn-success btn-user btn-block">
+                                    Verify OTP
+                                </button>
+
+                            </form>
+                        <?php endif; ?>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../assets/js/auth.js"></script>
+    <script src="<?= BASE_URL ?>assets/vendor/jquery/jquery.min.js"></script>
+    <script src="<?= BASE_URL ?>assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/sb-admin-2.min.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/auth.js"></script>
+
     <?php require_once '../includes/services/swal_render.php'; ?>
 
 </body>

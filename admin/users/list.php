@@ -30,12 +30,6 @@ require_once '../../includes/header.php';
 
         <div>
             <a href="add.php" class="btn btn-primary btn-sm">+ Add User</a>
-
-            <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
-                <a href="../roles/list.php" class="btn btn-secondary btn-sm">Roles</a>
-            <?php endif; ?>
-
-            <a href="../../admin/dashboard.php" class="btn btn-dark btn-sm">Dashboard</a>
         </div>
     </div>
 
@@ -65,7 +59,7 @@ require_once '../../includes/header.php';
                                 <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></td>
                                 <td><?= htmlspecialchars($user['email']); ?></td>
                                 <td>
-                                    <span class="badge secondary">
+                                    <span class="badge badge-info">
                                         <?= htmlspecialchars($user['role_name'] ?? '—'); ?>
                                     </span>
                                 </td>
@@ -76,9 +70,9 @@ require_once '../../includes/header.php';
                                 </td>
                                 <td>
                                     <?php if ($userService->isUserOnline($user['id'])): ?>
-                                        <span class="table-success" >Online</span>
+                                        <span class="badge badge-success" >Online</span>
                                     <?php else: ?>
-                                        <span class="table-danger">Offline</span>
+                                        <span class="badge badge-secondary">Offline</span>
                                     <?php endif; ?>
                                 </td>
                                 <td><?= $user['deleted_at'] ? 'Yes' : 'No'; ?></td>

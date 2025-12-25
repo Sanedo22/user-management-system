@@ -66,26 +66,6 @@ $totalRoles = (int)$stmt->fetchColumn();
 
     </div>
 
-    <!-- SECURITY STATUS -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Security</h5>
-
-            <?php if ($_SESSION['user']['twofa_enabled']): ?>
-                <div class="alert alert-success mb-3">
-                    Two-Factor Authentication is enabled for your account.
-                </div>
-            <?php else: ?>
-                <div class="alert alert-warning mb-3">
-                    Two-Factor Authentication is not enabled.
-                </div>
-                <a href="twofa/setup.php" class="btn btn-warning btn-sm">
-                    Enable 2FA
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
-
 </div>
 
 <?php require_once '../includes/footer.php'; ?>

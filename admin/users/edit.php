@@ -120,7 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header('Location: list.php');
             exit();
-
         } else {
             foreach ($result['errors'] as $error) {
                 if (stripos($error, 'email') !== false) {
@@ -138,113 +137,142 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+$title = 'Edit User';
+require_once '../../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit User</title>
-    <link rel="stylesheet" href="../../assets/css/form.css">
-    <?php require_once '../../includes/header.php'; ?>
-    <style>
-        .field-error {
-            color: red;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-    </style>
-</head>
+<div class="container-fluid">
 
-<body>
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit User</h1>
 
-<div class="form-container">
-    <div class="form-card">
-        <h2>Edit User</h2>
-        <a href="list.php">Back to Users List</a>
-        <br><br>
-
-        <?php if (!empty($fieldErrors['general'])): ?>
-            <div class="field-error">
-                <?php foreach ($fieldErrors['general'] as $err): ?>
-                    <?= htmlspecialchars($err) ?><br>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="post">
-
-            <div class="form-group">
-                <label>Role:</label><br>
-                <select name="role_id">
-                    <option value="">-- select role --</option>
-                    <?php foreach ($roles as $role): ?>
-                        <option value="<?= $role['id'] ?>" <?= ($role_id == $role['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($role['name']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <?php if (isset($fieldErrors['role_id'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['role_id']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>First Name:</label><br>
-                <input type="text" name="firstname" value="<?= htmlspecialchars($firstname) ?>">
-                <?php if (isset($fieldErrors['firstname'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['firstname']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>Last Name:</label><br>
-                <input type="text" name="lastname" value="<?= htmlspecialchars($lastname) ?>">
-                <?php if (isset($fieldErrors['lastname'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['lastname']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>Email:</label><br>
-                <input type="email" name="email" value="<?= htmlspecialchars($email) ?>">
-                <?php if (isset($fieldErrors['email'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['email']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>Country Code:</label><br>
-                <select name="country_code">
-                    <option value="">-- select country code --</option>
-                    <option value="+91" <?= ($countrycode === '+91') ? 'selected' : '' ?>>India (+91)</option>
-                    <option value="+1" <?= ($countrycode === '+1') ? 'selected' : '' ?>>USA / Canada (+1)</option>
-                    <option value="+44" <?= ($countrycode === '+44') ? 'selected' : '' ?>>UK (+44)</option>
-                    <option value="+61" <?= ($countrycode === '+61') ? 'selected' : '' ?>>Australia (+61)</option>
-                    <option value="+81" <?= ($countrycode === '+81') ? 'selected' : '' ?>>Japan (+81)</option>
-                    <option value="+971" <?= ($countrycode === '+971') ? 'selected' : '' ?>>UAE (+971)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Phone Number:</label><br>
-                <input type="text" name="phone_number" value="<?= htmlspecialchars($phonenumber) ?>">
-                <?php if (isset($fieldErrors['phone_number'])): ?>
-                    <div class="field-error"><?= htmlspecialchars($fieldErrors['phone_number']) ?></div>
-                <?php endif; ?>
-            </div>
-
-            <div class="form-group">
-                <label>Address:</label><br>
-                <textarea name="address"><?= htmlspecialchars($address) ?></textarea>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn">Update User</button>
-            </div>
-
-        </form>
+        <a href="list.php" class="btn btn-dark btn-sm">
+            Back to Users
+        </a>
     </div>
+
+    <?php if (!empty($fieldErrors['general'])): ?>
+        <div class="alert alert-danger">
+            <?php foreach ($fieldErrors['general'] as $err): ?>
+                <?= htmlspecialchars($err) ?><br>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="card shadow-sm col-lg-8 p-0">
+        <div class="card-body">
+
+            <form method="post">
+
+                <!-- Role -->
+                <div class="form-group">
+                    <label>Role</label>
+                    <select name="role_id" class="form-control">
+                        <option value="">-- Select Role --</option>
+                        <?php foreach ($roles as $role): ?>
+                            <option value="<?= $role['id'] ?>"
+                                <?= ($role_id == $role['id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($role['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <?php if (isset($fieldErrors['role_id'])): ?>
+                        <small class="text-danger"><?= htmlspecialchars($fieldErrors['role_id']) ?></small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Name -->
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>First Name</label>
+                        <input type="text"
+                            name="firstname"
+                            class="form-control"
+                            value="<?= htmlspecialchars($firstname) ?>">
+                        <?php if (isset($fieldErrors['firstname'])): ?>
+                            <small class="text-danger"><?= htmlspecialchars($fieldErrors['firstname']) ?></small>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Last Name</label>
+                        <input type="text"
+                            name="lastname"
+                            class="form-control"
+                            value="<?= htmlspecialchars($lastname) ?>">
+                        <?php if (isset($fieldErrors['lastname'])): ?>
+                            <small class="text-danger"><?= htmlspecialchars($fieldErrors['lastname']) ?></small>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email"
+                        name="email"
+                        class="form-control"
+                        value="<?= htmlspecialchars($email) ?>">
+                    <?php if (isset($fieldErrors['email'])): ?>
+                        <small class="text-danger"><?= htmlspecialchars($fieldErrors['email']) ?></small>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label>Country Code</label>
+                        <select name="country_code" class="form-control">
+                            <option value="+91" <?= ($countrycode === '+91') ? 'selected' : '' ?>>+91</option>
+                            <option value="+1" <?= ($countrycode === '+1')  ? 'selected' : '' ?>>+1</option>
+                            <option value="+44" <?= ($countrycode === '+44') ? 'selected' : '' ?>>+44</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-9">
+                        <label>Phone Number</label>
+                        <input type="text"
+                            name="phone_number"
+                            class="form-control"
+                            value="<?= htmlspecialchars($phonenumber) ?>">
+                        <?php if (isset($fieldErrors['phone_number'])): ?>
+                            <small class="text-danger"><?= htmlspecialchars($fieldErrors['phone_number']) ?></small>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea name="address"
+                        class="form-control"
+                        rows="3"><?= htmlspecialchars($address) ?></textarea>
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status" class="form-control">
+                        <option value="1" <?= ($status == 1) ? 'selected' : '' ?>>Active</option>
+                        <option value="0" <?= ($status == 0) ? 'selected' : '' ?>>Inactive</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <button type="submit" class="btn btn-primary btn-sm">
+                    Update User
+                </button>
+
+                <a href="list.php" class="btn btn-secondary btn-sm">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
 </div>
 
-</body>
-</html>
+<?php require_once '../../includes/footer.php'; ?>

@@ -1,6 +1,8 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+
+    require_once __DIR__ . '/../config/constants.php';
 }
 ?>
 <!DOCTYPE html>
@@ -11,12 +13,12 @@ if (session_status() === PHP_SESSION_NONE) {
     <title><?= $title ?? 'Admin Panel' ?></title>
 
     <!-- SB Admin 2 CSS -->
-    <link href="../../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="../../assets/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assests/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Datatables bootstrap4 -->
     <link rel="stylesheet"
       href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
-
-
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -29,21 +31,21 @@ if (session_status() === PHP_SESSION_NONE) {
         <!-- SIDEBAR -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin/dashboard.php">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/admin/dashboard.php">
                 <div class="sidebar-brand-text mx-3">Admin Panel</div>
             </a>
 
             <hr class="sidebar-divider my-0">
 
             <li class="nav-item">
-                <a class="nav-link" href="../../admin/dashboard.php">
+                <a class="nav-link" href="<?= BASE_URL ?>/admin/dashboard.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="../admin/users/list.php">
+                <a class="nav-link" href="<?= BASE_URL ?>/admin/users/list.php">
                     <i class="fas fa-fw fa-users"></i>
                     <span>Users</span>
                 </a>
@@ -51,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
             <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="../admin/roles/list.php">
+                    <a class="nav-link" href="<?= BASE_URL ?>/admin/roles/list.php">
                         <i class="fas fa-fw fa-user-shield"></i>
                         <span>Roles</span>
                     </a>
@@ -61,7 +63,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <hr class="sidebar-divider">
 
             <li class="nav-item">
-                <a class="nav-link text-danger" href="../admin/logout.php">
+                <a class="nav-link text-danger" href="<?= BASE_URL ?>/admin/logout.php">
                     <i class="fas fa-fw fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>

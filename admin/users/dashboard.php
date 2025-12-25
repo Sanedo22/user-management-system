@@ -22,7 +22,6 @@ $profileImage = !empty($user['profile_img'])
     ? $baseUrl . '../admin/uploads/profiles/' . $user['profile_img']
     : $baseUrl . '../admin/uploads/profiles/default.png';
 
-
 // UPDATE PROFILE
 if (isset($_POST['upload_image'])) {
 
@@ -63,89 +62,127 @@ if (isset($_POST['change_password'])) {
         $success = 'Password changed successfully';
     }
 }
+
+$title = 'User Dashboard';
+require_once '../../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
+<div class="container-fluid">
 
-<head>
-    <title>User Dashboard</title>
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
-</head>
+    <h1 class="h3 mb-4 text-gray-800">User Dashboard</h1>
 
-<body>
-    <div class="container">
+    <?php if ($errors): ?>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <?php foreach ($errors as $e): ?>
+                    <li><?= htmlspecialchars($e) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
-        <h2 class="dashboard-title">User Dashboard</h2>
+    <?php if ($success): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($success) ?>
+        </div>
+    <?php endif; ?>
 
-        <?php if ($errors): ?>
-            <div class="alert alert-error">
-                <ul>
-                    <?php foreach ($errors as $e): ?>
-                        <li><?= htmlspecialchars($e) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
+    <div class="row">
 
-        <?php if ($success): ?>
-            <div class="alert alert-success">
-                <p><?= htmlspecialchars($success) ?></p>
-            </div>
-        <?php endif; ?>
+        <!-- Profile Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
 
-        <!-- Profile Picture Section -->
-        <div class="dashboard-section">
-            <h3>Profile Picture</h3>
-            <div class="profile-img-wrapper">
-                <img src="<?= htmlspecialchars($profileImage) ?>"
-                    alt="Profile Image"
-                    class="profile-img">
+                    <img src="<?= htmlspecialchars($profileImage) ?>"
+                        class="img-fluid rounded-circle mb-3"
+                        style="width:150px;height:150px;object-fit:cover;">
+
+                    <h5 class="mb-1">
+                        <?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        <?= htmlspecialchars($user['email']) ?>
+                    </p>
+
+                </div>
             </div>
         </div>
 
-        <!-- Edit Profile Section -->
-        <div class="dashboard-section">
-            <h3>Upload Image</h3>
-            <form method="post" enctype="multipart/form-data" class="dashboard-form">
-                <div class="form-group">
-                    <label for="profile_img">Profile Image</label>
-                    <input type="file" id="profile_img" name="profile_img" accept="image/*">
+        <!-- Upload Image -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    Upload Profile Image
                 </div>
-
-                <button type="submit" name="upload_image" class="btn primary">Upload Image</button>
-            </form>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="file" name="profile_img" class="form-control-file" accept="image/*">
+                        </div>
+                        <button type="submit" name="upload_image" class="btn btn-primary btn-sm">
+                            Upload
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
-        <!-- Change Password Section -->
-        <div class="dashboard-section">
-            <h3>Change Password</h3>
-            <form method="post" class="dashboard-form">
-                <div class="form-group">
-                    <label for="current_password">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required>
+        <!-- Change Password -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    Change Password
                 </div>
-
-                <div class="form-group">
-                    <label for="new_password">New Password</label>
-                    <input type="password" id="new_password" name="new_password" required>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="form-group">
+                            <input type="password" name="current_password" class="form-control" placeholder="Current Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" name="change_password" class="btn btn-warning btn-sm">
+                            Change Password
+                        </button>
+                    </form>
                 </div>
-
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                </div>
-
-                <button type="submit" name="change_password" class="btn primary">Change Password</button>
-            </form>
+            </div>
         </div>
 
-        <!-- Logout Section -->
-        <div class="dashboard-section">
-            <a href="../logout.php" class="btn danger">Logout</a>
+        <!-- SECURITY STATUS -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Security</h5>
+
+                <?php if ($_SESSION['user']['twofa_enabled']): ?>
+                    <div class="alert alert-success mb-3">
+                        Two-Factor Authentication is enabled for your account.
+                    </div>
+                    <a href="twofa/disable.php" class="btn btn-warning btn-sm">
+                        Disable 2FA
+                    </a>
+                <?php else: ?>
+                    <div class="alert alert-warning mb-3">
+                        Two-Factor Authentication is not enabled.
+                    </div>
+                    <a href="twofa/setup.php" class="btn btn-warning btn-sm">
+                        Enable 2FA
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
 
     </div>
-</body>
 
-</html>
+    <a href="../logout.php" class="btn btn-danger btn-sm">
+        Logout
+    </a>
+
+</div>
+
+<?php require_once '../../includes/footer.php'; ?>

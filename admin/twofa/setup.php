@@ -36,10 +36,10 @@ $secret = $_SESSION['twofa_setup_secret'];
 $qrUrl  = $totp->getQrCodeUrl($email, $secret);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $otp = trim($_POST['otp'] ?? '');
     $otp = str_replace(' ', '', $otp);
 
-    //OTP format invalid
     if (!ctype_digit($otp) || strlen($otp) !== 6) {
         $_SESSION['swal'] = [
             'icon'  => 'error',
@@ -50,18 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    //OTP correct
     if ($totp->verifyCode($secret, $otp)) {
 
-        // enable 2FA in DB
         $sql = "UPDATE users SET twofa_enabled = 1, twofa_secret = ? WHERE id = ?";
         $stmt = $db->prepare($sql);
         $stmt->execute([$secret, $userId]);
 
-        // sync session
         $_SESSION['user']['twofa_enabled'] = 1;
-
-        // cleanup setup secret
         unset($_SESSION['twofa_setup_secret']);
 
         $_SESSION['swal'] = [
@@ -74,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    //invalid otp
     $_SESSION['swal'] = [
         'icon'  => 'error',
         'title' => 'Invalid OTP',
@@ -83,29 +77,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: setup.php');
     exit();
 }
+
+$title = 'Enable Two-Factor Authentication';
+require_once '../../includes/header.php';
 ?>
 
-<link rel="stylesheet" href="../../assets/css/form.css">
+<div class="container-fluid">
 
-<div class="form-container">
-    <div class="form-card">
-        <h2>Enable Two-Factor Authentication</h2>
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
 
-        <p>Scan this QR code using Authy / Microsoft / Google Authenticator</p>
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
 
-        <img src="<?= htmlspecialchars($qrUrl) ?>" alt="QR Code">
+                    <h4 class="mb-3 text-gray-800">
+                        Enable Two-Factor Authentication
+                    </h4>
 
-        <form method="post">
-            <div class="form-group">
-                <input type="text" name="otp" placeholder="6-digit OTP" required>
-                <br><br>
-                <div class="btn primary">
-                    <button class="form-actions" type="submit">Verify & Enable</button>
+                    <p class="text-muted">
+                        Scan this QR code using Google Authenticator,
+                        Microsoft Authenticator, or Authy.
+                    </p>
+
+                    <img src="<?= htmlspecialchars($qrUrl) ?>"
+                         alt="QR Code"
+                         class="img-fluid mb-4"
+                         style="max-width:200px;">
+
+                    <form method="post" class="col-md-6 mx-auto">
+
+                        <div class="form-group">
+                            <input type="text"
+                                   name="otp"
+                                   class="form-control text-center"
+                                   placeholder="Enter 6-digit OTP"
+                                   required>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary btn-block">
+                            Verify & Enable 2FA
+                        </button>
+
+                    </form>
+
                 </div>
             </div>
-        </form>
+
+        </div>
     </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php require_once '../../includes/services/swal_render.php'; ?>
+<?php require_once '../../includes/footer.php'; ?>
