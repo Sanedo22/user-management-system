@@ -13,7 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <title><?= $title ?? 'Admin Panel' ?></title>
 
     <!-- SB Admin 2 CSS -->
-    <link href="<?= BASE_URL ?>/assests/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
 
     <!-- Datatables bootstrap4 -->
@@ -85,9 +85,9 @@ if (session_status() === PHP_SESSION_NONE) {
                 <!-- TOPBAR -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
+                    <!-- <button id="sidebarToggleTop" class="btn btn-link rounded-circle mr-3" ">
+                        <i class=" fas fa-bars"></i>
+                    </button> -->
 
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown no-arrow">

@@ -74,6 +74,9 @@ if (isset($_POST['change_password'])) {
     <meta charset="UTF-8">
     <title>User Dashboard</title>
 
+    <link href="<?= BASE_URL ?>/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
+
     <!-- Bootstrap (same version used in admin) -->
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
@@ -99,10 +102,13 @@ if (isset($_POST['change_password'])) {
         <?php endif; ?>
 
         <?php if ($success): ?>
-            <div class="alert alert-success">
+            <div class="alert alert-success position-relative">
                 <?= htmlspecialchars($success) ?>
             </div>
         <?php endif; ?>
+
+
+
 
         <!-- PROFILE SUMMARY -->
         <div class="card mb-4">
@@ -214,6 +220,15 @@ if (isset($_POST['change_password'])) {
                 }
             });
         }
+
+        //success message
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(a => {
+                a.style.transition = 'opacity .3s';
+                a.style.opacity = 0;
+                setTimeout(() => a.remove(), 150);
+            });
+        }, 1000);
     </script>
 
 </body>
