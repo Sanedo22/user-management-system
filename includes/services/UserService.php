@@ -296,12 +296,32 @@ class UserService
 
     private function canDeleteUser($loggedInUser, $targetUser)
     {
-        if ($targetUser['role_name'] === 'Super Admin') return false;
-        if ($loggedInUser['role_name'] === 'Super Admin') return true;
+        // Nobody edits themselves
+        if ($loggedInUser['id'] == $targetUser['id']) {
+            return false;
+        }
+
+        // Root Super Admin can edit anyone
+        if ($loggedInUser['id'] === ROOT_SUPER_ADMIN_ID) {
+            return true;
+        }
+
+        // Super Admin can edit anyone except Super Admin
+        if (
+            $loggedInUser['role_name'] === 'Super Admin' &&
+            $targetUser['role_name'] !== 'Super Admin'
+        ) {
+            return true;
+        }
+
+        // Admin can edit anyone except Admin & Super Admin
         if (
             $loggedInUser['role_name'] === 'Admin' &&
-            in_array($targetUser['role_name'], ['Manager', 'User'])
-        ) return true;
+            !in_array($targetUser['role_name'], ['Admin', 'Super Admin'])
+        ) {
+            return true;
+        }
+
         return false;
     }
 

@@ -147,15 +147,6 @@ require_once '../../includes/header.php';
                     </small>
                 </div>
 
-                <!-- Status -->
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option value="1" <?= ($status == 1) ? 'selected' : '' ?>>Active</option>
-                        <option value="0" <?= ($status == 0) ? 'selected' : '' ?>>Inactive</option>
-                    </select>
-                </div>
-
                 <!-- Actions -->
                 <button type="submit" class="btn btn-primary btn-sm">
                     Update Role

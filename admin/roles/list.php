@@ -14,7 +14,7 @@ $db = $dbObj->getConnection();
 $roleService = new RoleService($db);
 
 // fetch all roles (active + deleted)
-$roles = $roleService->getAllRoles(true);
+$roles = $roleService->getRolesWithActiveUserCount();
 
 $title = 'Roles';
 require_once '../../includes/header.php';
@@ -64,11 +64,11 @@ require_once '../../includes/header.php';
                                     <td><?= htmlspecialchars($role['slug']); ?></td>
 
                                     <td>
-                                        <?php if ($role['status'] == 1) { ?>
+                                        <?php if ($role['active_users'] > 0): ?>
                                             <span class="badge badge-success">Active</span>
-                                        <?php } else { ?>
+                                        <?php else : ?>
                                             <span class="badge badge-secondary">Inactive</span>
-                                        <?php } ?>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td><?= ($role['deleted_at'] !== null && $role['deleted_at'] !== '') ? 'Yes' : 'No'; ?></td>

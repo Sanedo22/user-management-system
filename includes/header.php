@@ -93,6 +93,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                                 <span class="mr-2 text-gray-600 small">
+                                    Welcome,
                                     <?= $_SESSION['user']['email'] ?>
                                 </span>
                             </a>

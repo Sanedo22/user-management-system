@@ -222,8 +222,7 @@ class RoleService
         $sql = "SELECT COUNT(*) 
             FROM users 
             WHERE role_id = ?
-              AND deleted_at IS NULL
-              AND status = 1";
+              AND deleted_at IS NULL";
 
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$roleId]);
@@ -241,5 +240,25 @@ class RoleService
         $sql = "UPDATE roles SET status = ? WHERE id = ?";
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$status, $roleId]);
+    }
+
+    // RoleService.php
+    public function getRolesWithActiveUserCount()
+    {
+        $sql = "
+        SELECT r.*,
+               COUNT(u.id) AS active_users
+        FROM roles r
+        LEFT JOIN users u
+            ON u.role_id = r.id
+           AND u.deleted_at IS NULL
+        GROUP BY r.id
+        ORDER BY r.id DESC
+    ";
+
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

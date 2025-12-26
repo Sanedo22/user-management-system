@@ -21,8 +21,8 @@ function requireLogin()
 
     $db = (new Database())->getConnection();
 
-    //Validateing session from DB
-    $sql = "SELECT * FROM user_sessions WHERE session_id = ? AND is_active=1";
+    // Validate session from DB
+    $sql = "SELECT * FROM user_sessions WHERE session_id = ? AND is_active = 1";
     $stmt = $db->prepare($sql);
     $stmt->execute([session_id()]);
     $session = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -40,7 +40,33 @@ function requireLogin()
         exit();
     }
 
-    //update last activity
+    //verify user still exists & not deleted
+    $sql = "SELECT deleted_at FROM users WHERE id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$_SESSION['user']['id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user || $user['deleted_at'] !== null) {
+
+        $_SESSION['swal'] = [
+            'icon'  => 'error',
+            'title' => 'Account Disabled',
+            'text'  => 'Your account has been removed by an administrator.'
+        ];
+
+        // deactivate session record
+        $sql = "UPDATE user_sessions SET is_active = 0 WHERE session_id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([session_id()]);
+
+        session_unset();
+        session_destroy();
+
+        header('Location: ../../admin/login.php');
+        exit();
+    }
+
+    // update last activity
     $sql = "UPDATE user_sessions SET last_activity = NOW() WHERE session_id = ?";
     $stmt = $db->prepare($sql);
     $stmt->execute([session_id()]);

@@ -175,7 +175,7 @@ require_once '../../includes/header.php';
     function confirmDelete(userId) {
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This action cannot be undone',
+            text: 'User will be soft deleted',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes, delete'
