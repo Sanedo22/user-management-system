@@ -1,6 +1,7 @@
 <?php
 require_once '../../includes/repo/auth.php';
 requireLogin();
+requireRole(['User']);
 
 require_once '../../config/database.php';
 
@@ -22,7 +23,9 @@ $profileImage = !empty($user['profile_img'])
     ? $baseUrl . '../admin/uploads/profiles/' . $user['profile_img']
     : $baseUrl . '../admin/uploads/profiles/default.png';
 
-// UPDATE PROFILE
+/* -----------------------------
+   UPDATE PROFILE
+------------------------------*/
 if (isset($_POST['upload_image'])) {
 
     $profileImg = $user['profile_img'];
@@ -35,15 +38,15 @@ if (isset($_POST['upload_image'])) {
         $profileImg = $fileName;
     }
 
-    if (!$errors) {
-        $sql = "UPDATE users SET profile_img=? WHERE id=?";
-        $stmt = $db->prepare($sql);
-        $stmt->execute([$profileImg, $userId]);
-        $success = 'Profile Image Uploaded successfully';
-    }
+    $sql = "UPDATE users SET profile_img=? WHERE id=?";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([$profileImg, $userId]);
+    $success = 'Profile image updated successfully';
 }
 
-// CHANGE PASSWORD
+/* -----------------------------
+   CHANGE PASSWORD
+------------------------------*/
 if (isset($_POST['change_password'])) {
 
     $current = $_POST['current_password'];
@@ -52,7 +55,7 @@ if (isset($_POST['change_password'])) {
 
     if ($new !== $confirm) {
         $errors[] = 'Passwords do not match';
-    } else if (!password_verify($current, $user['password'])) {
+    } elseif (!password_verify($current, $user['password'])) {
         $errors[] = 'Current password incorrect';
     } else {
         $hash = password_hash($new, PASSWORD_DEFAULT);
@@ -62,127 +65,157 @@ if (isset($_POST['change_password'])) {
         $success = 'Password changed successfully';
     }
 }
-
-$title = 'User Dashboard';
-require_once '../../includes/header.php';
 ?>
 
-<div class="container-fluid">
+<!DOCTYPE html>
+<html lang="en">
 
-    <h1 class="h3 mb-4 text-gray-800">User Dashboard</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
 
-    <?php if ($errors): ?>
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                <?php foreach ($errors as $e): ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+    <!-- Bootstrap (same version used in admin) -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
-    <?php if ($success): ?>
-        <div class="alert alert-success">
-            <?= htmlspecialchars($success) ?>
-        </div>
-    <?php endif; ?>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 
-    <div class="row">
+<body class="bg-light">
 
-        <!-- Profile Card -->
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center">
+    <div class="container py-4">
 
-                    <img src="<?= htmlspecialchars($profileImage) ?>"
-                        class="img-fluid rounded-circle mb-3"
-                        style="width:150px;height:150px;object-fit:cover;">
+        <h2 class="mb-4">My Dashboard</h2>
 
-                    <h5 class="mb-1">
-                        <?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>
-                    </h5>
+        <?php if ($errors): ?>
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    <?php foreach ($errors as $e): ?>
+                        <li><?= htmlspecialchars($e) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
 
-                    <p class="text-muted mb-0">
-                        <?= htmlspecialchars($user['email']) ?>
-                    </p>
+        <?php if ($success): ?>
+            <div class="alert alert-success">
+                <?= htmlspecialchars($success) ?>
+            </div>
+        <?php endif; ?>
 
-                </div>
+        <!-- PROFILE SUMMARY -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <img src="<?= htmlspecialchars($profileImage) ?>"
+                    class="rounded-circle mb-3"
+                    style="width:120px;height:120px;object-fit:cover;">
+                <h5 class="mb-1">
+                    <?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>
+                </h5>
+                <p class="text-muted mb-0">
+                    <?= htmlspecialchars($user['email']) ?>
+                </p>
             </div>
         </div>
 
-        <!-- Upload Image -->
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                    Upload Profile Image
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <input type="file" name="profile_img" class="form-control-file" accept="image/*">
-                        </div>
-                        <button type="submit" name="upload_image" class="btn btn-primary btn-sm">
-                            Upload
-                        </button>
-                    </form>
+        <div class="row">
+
+            <!-- Upload Image -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Upload Profile Image</div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <input type="file" name="profile_img" class="form-control-file mb-2" accept="image/*">
+                            <button type="submit" name="upload_image" class="btn btn-primary btn-sm">
+                                Upload
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Change Password -->
-        <div class="col-md-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                    Change Password
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="form-group">
-                            <input type="password" name="current_password" class="form-control" placeholder="Current Password" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" name="new_password" class="form-control" placeholder="New Password" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
-                        </div>
-                        <button type="submit" name="change_password" class="btn btn-warning btn-sm">
-                            Change Password
-                        </button>
-                    </form>
+            <!-- Change Password -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">Change Password</div>
+                    <div class="card-body">
+                        <form method="post">
+                            <input type="password" name="current_password" class="form-control mb-2" placeholder="Current Password" required>
+                            <input type="password" name="new_password" class="form-control mb-2" placeholder="New Password" required>
+                            <input type="password" name="confirm_password" class="form-control mb-2" placeholder="Confirm Password" required>
+                            <button type="submit" name="change_password" class="btn btn-warning btn-sm">
+                                Change Password
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- SECURITY STATUS -->
-        <div class="card shadow-sm">
+        <!-- SECURITY -->
+        <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Security</h5>
+                <h5>Security</h5>
 
                 <?php if ($_SESSION['user']['twofa_enabled']): ?>
-                    <div class="alert alert-success mb-3">
-                        Two-Factor Authentication is enabled for your account.
+                    <div class="alert alert-success">
+                        Two-Factor Authentication is enabled.
                     </div>
-                    <a href="twofa/disable.php" class="btn btn-warning btn-sm">
+                    <button class="btn btn-warning btn-sm" onclick="confirmDisable2FA()">
                         Disable 2FA
-                    </a>
+                    </button>
+
+                    <form id="disable2faForm"
+                        method="post"
+                        action="<?= BASE_URL ?>/admin/twofa/disable.php"
+                        style="display:none;">
+                        <input type="password" name="password" id="disable2faPassword">
+                    </form>
                 <?php else: ?>
-                    <div class="alert alert-warning mb-3">
+                    <div class="alert alert-warning">
                         Two-Factor Authentication is not enabled.
                     </div>
-                    <a href="twofa/setup.php" class="btn btn-warning btn-sm">
+                    <a href="<?= BASE_URL ?>/admin/twofa/setup.php" class="btn btn-primary btn-sm">
                         Enable 2FA
                     </a>
                 <?php endif; ?>
             </div>
         </div>
 
+        <a href="../logout.php" class="btn btn-danger btn-sm">
+            Logout
+        </a>
+
     </div>
 
-    <a href="../logout.php" class="btn btn-danger btn-sm">
-        Logout
-    </a>
+    <script>
+        function confirmDisable2FA() {
+            Swal.fire({
+                title: 'Disable Two-Factor Authentication?',
+                input: 'password',
+                inputPlaceholder: 'Confirm your password',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Disable',
+                confirmButtonColor: '#f6c23e',
+                showLoaderOnConfirm: true,
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password is required');
+                        return false;
+                    }
+                    document.getElementById('disable2faPassword').value = password;
+                    document.getElementById('disable2faForm').submit();
+                }
+            });
+        }
+    </script>
 
-</div>
+</body>
 
-<?php require_once '../../includes/footer.php'; ?>
+</html>

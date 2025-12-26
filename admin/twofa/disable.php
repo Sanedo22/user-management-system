@@ -7,8 +7,15 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
+$adminRoles = ['Super Admin', 'Admin'];
+
+$redirectAfterDisable2FA = in_array($_SESSION['user']['role_name'], $adminRoles)
+    ? '../dashboard.php'
+    : '../users/dashboard.php';
+
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../dashboard.php');
+    header('Location: ' . $redirectAfterDisable2FA);
     exit();
 }
 
@@ -24,7 +31,7 @@ $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user || !password_verify($password, $user['password'])) {
-    header('Location: ../dashboard.php?error=wrong_password');
+    header('Location:' . $redirectAfterDisable2FA . '?error=wrong_password');
     exit();
 }
 
@@ -36,5 +43,11 @@ $stmt->execute([$userId]);
 // update session
 $_SESSION['user']['twofa_enabled'] = 0;
 
-header('Location: ../dashboard.php?2fa=disabled');
+$_SESSION['swal'] = [
+    'icon'  => 'success',
+    'title' => '2FA Disabled',
+    'text'  => 'Two-Factor Authentication has been disabled successfully'
+];
+
+header('Location: ' . $redirectAfterDisable2FA . '?2fa=disabled');
 exit();

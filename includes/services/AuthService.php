@@ -29,14 +29,14 @@ class AuthService
         if (!$user) {
             return [
                 'success' => false,
-                'errors' => ['Invalid email or password']
+                'errors' => ['Invalid email or password or user deleted!']
             ];
         }
 
         if (!password_verify($password, $user['password'])) {
             return [
                 'success' => false,
-                'errors' => ['Invalid email or password']
+                'errors' => ['Invalid email or password or user deleted!']
             ];
         }
 

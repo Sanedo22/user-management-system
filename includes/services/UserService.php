@@ -85,10 +85,10 @@ class UserService
 
         $id = $this->repo->insert($data);
 
-        if ($id) {
-            $roleService = new RoleService($this->repo->db);
-            $roleService->syncRoleStatus($role_id);
-        }
+        // if ($id) {
+        //     $roleService = new RoleService($this->repo->db);
+        //     $roleService->syncRoleStatus($role_id);
+        // }
 
         return $id
             ? ['success' => true, 'message' => 'User created successfully', 'id' => $id]
@@ -180,12 +180,12 @@ class UserService
             $roleService = new RoleService($this->repo->db);
 
             // old role may lose this user
-            if ($oldRoleId != $role_id) {
-                $roleService->syncRoleStatus($oldRoleId);
-            }
+            // if ($oldRoleId != $role_id) {
+            //     $roleService->syncRoleStatus($oldRoleId);
+            // }
 
-            // new role gains this user
-            $roleService->syncRoleStatus($role_id);
+            // // new role gains this user
+            // $roleService->syncRoleStatus($role_id);
 
             return ['success' => true, 'message' => 'User updated successfully'];
         }
@@ -236,8 +236,8 @@ class UserService
         $deleted = $this->repo->delete($id);
 
         if ($deleted) {
-            $roleService = new RoleService($this->repo->db);
-            $roleService->syncRoleStatus($targetUser['role_id']);
+            // $roleService = new RoleService($this->repo->db);
+            // $roleService->syncRoleStatus($targetUser['role_id']);
 
             return ['success' => true, 'message' => 'User deleted successfully'];
         }
@@ -250,27 +250,50 @@ class UserService
         if ($id == ROOT_SUPER_ADMIN_ID) {
             return [
                 'success' => false,
-                'errors'  => ['Root Super Admin cannot be restored or modified']
+                'errors'  => ['Root Super Admin cannot be restored']
             ];
         }
 
-        $sql = "SELECT role_id FROM users WHERE id = ?";
+        $sql = "SELECT u.role_id, r.status, r.deleted_at
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = ?";
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$id]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        if (!$data) {
+            return ['success' => false, 'errors' => ['User not found']];
+        }
+
+        if ($data['deleted_at'] !== null) {
+            return [
+                'success' => false,
+                'errors'  => ['Cannot restore user: role is deleted']
+            ];
+        }
+
+        if ((int)$data['status'] === 0) {
+            return [
+                'success' => false,
+                'errors'  => [
+                    'Cannot restore user because the assigned role is inactive. Reactivate the role first.'
+                ]
+            ];
+        }
 
         $restored = $this->repo->restore($id);
 
         if ($restored) {
-            $roleService = new RoleService($this->repo->db);
-            $roleService->syncRoleStatus($user['role_id']);
+            // $roleService = new RoleService($this->repo->db);
+            // $roleService->syncRoleStatus($data['role_id']);
 
             return ['success' => true, 'message' => 'User restored successfully'];
         }
 
-        return ['success' => false, 'errors' => ['Failed to restore user']];
+        return ['success' => false, 'errors' => ['Restore failed']];
     }
+
 
     // validate user data
     private function validateUser($email, $password, $firstname, $lastname, $phoneNumber, $excludeId = null)
@@ -460,5 +483,18 @@ class UserService
         $stmt->execute([$userId]);
 
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function getUserIncludingDeleted($id)
+    {
+        $sql = "SELECT u.*, r.name AS role_name
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            WHERE u.id = ?";
+
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

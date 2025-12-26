@@ -28,6 +28,17 @@ if (!$role) {
     exit;
 }
 
+if ($roleService->isRoleAssignedToUsers($id)) {
+    $_SESSION['swal'] = [
+        'icon'  => 'warning',
+        'title' => 'Role In Use',
+        'text'  => 'This role is already assigned to users and cannot be edited.'
+    ];
+    header('Location: list.php');
+    exit;
+}
+
+
 // protect Super Admin role
 if ($role['name'] === 'Super Admin') {
     $_SESSION['swal'] = [
@@ -72,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header('Location: list.php');
             exit;
-
         } else {
             foreach ($result['errors'] as $error) {
                 if (stripos($error, 'name') !== false) {
@@ -86,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $title = 'Edit Role';
-require_once __DIR__ . '/../../includes/layouts/admin/header.php';
+require_once '../../includes/header.php';
 ?>
 
 <div class="container-fluid">
@@ -117,9 +127,9 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
                 <div class="form-group">
                     <label>Role Name</label>
                     <input type="text"
-                           name="name"
-                           class="form-control"
-                           value="<?= htmlspecialchars($name) ?>">
+                        name="name"
+                        class="form-control"
+                        value="<?= htmlspecialchars($name) ?>">
                     <?php if (isset($fieldErrors['name'])): ?>
                         <small class="text-danger"><?= htmlspecialchars($fieldErrors['name']) ?></small>
                     <?php endif; ?>
@@ -129,9 +139,9 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
                 <div class="form-group">
                     <label>Slug</label>
                     <input type="text"
-                           class="form-control"
-                           value="Auto-generated from role name"
-                           disabled>
+                        class="form-control"
+                        value="Auto-generated from role name"
+                        disabled>
                     <small class="text-muted">
                         Slug will be regenerated automatically if name changes.
                     </small>
@@ -162,5 +172,5 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
 
 </div>
 
-<?php require_once __DIR__ . '/../includes/layouts/admin/footer.php';
- ?>
+<?php require_once '../../includes/footer.php';
+?>

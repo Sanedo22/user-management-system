@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../repo/repository.php';
+require_once '../../includes/repo/repository.php';
 
 class RoleService
 {
@@ -161,7 +161,16 @@ class RoleService
             ];
         }
 
-        if ($this->repo->restore($id)) {
+        // restore deleted_at
+        $restored = $this->repo->restore($id);
+
+        if ($restored) {
+
+            // 🔑 IMPORTANT FIX: re-activate role explicitly
+            $this->repo->update($id, [
+                'status' => 1
+            ]);
+
             return [
                 'success' => true,
                 'message' => 'Role restored successfully'
@@ -173,6 +182,7 @@ class RoleService
             'errors'  => ['Failed to restore role']
         ];
     }
+
 
     private function validateRole($name, $slug, $status, $skipId = null)
     {
@@ -211,20 +221,23 @@ class RoleService
 
     public function isRoleAssignedToUsers($roleId)
     {
-        $sql = "SELECT COUNT(*) FROM users WHERE role_id = ? AND deleted_at IS NULL";
+        $sql = "SELECT COUNT(*) 
+                FROM users WHERE role_id = ? 
+                AND deleted_at IS NULL
+                AND status = 1";
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$roleId]);
         return $stmt->fetchColumn() > 0;
     }
 
-    public function syncRoleStatus($roleId)
-    {
-        $isAssigned = $this->isRoleAssignedToUsers($roleId);
+    // public function syncRoleStatus($roleId)
+    // {
+    //     $isAssigned = $this->isRoleAssignedToUsers($roleId);
 
-        $status = $isAssigned ? 1 : 0;
+    //     $status = $isAssigned ? 1 : 0;
 
-        $sql = "UPDATE roles SET status = ? WHERE id = ?";
-        $stmt = $this->repo->db->prepare($sql);
-        $stmt->execute([$status, $roleId]);
-    }
+    //     $sql = "UPDATE roles SET status = ? WHERE id = ?";
+    //     $stmt = $this->repo->db->prepare($sql);
+    //     $stmt->execute([$status, $roleId]);
+    // }
 }

@@ -53,7 +53,7 @@ if ($role['name'] === 'Super Admin') {
 if ($roleService->isRoleAssignedToUsers($id)) {
     $_SESSION['swal'] = [
         'icon'  => 'error',
-        'title' => 'Action Blocked',
+        'title' => 'Delete blocked',
         'text'  => 'This role is assigned to users and cannot be deleted'
     ];
     header('Location: list.php');

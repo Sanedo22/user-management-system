@@ -17,7 +17,7 @@ $roleService = new RoleService($db);
 $roles = $roleService->getAllRoles(true);
 
 $title = 'Roles';
-require_once __DIR__ . '/../../includes/layouts/admin/header.php';
+require_once '../../includes/header.php';
 ?>
 
 <div class="container-fluid">
@@ -37,7 +37,7 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
 
             <div class="table-responsive">
                 <table id="rolesTable"
-                       class="table table-bordered table-hover align-middle">
+                    class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
@@ -52,7 +52,7 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
                     <tbody>
                         <?php if (!empty($roles)) { ?>
                             <?php foreach ($roles as $role) { ?>
-                                <tr class="<?= $role['deleted_at'] ? 'table-danger' : '' ?>">
+                                <tr class="<?= ($role['deleted_at'] !== null && $role['deleted_at'] !== '') ? 'table-danger' : '' ?>">
                                     <td><?= $role['id']; ?></td>
 
                                     <td>
@@ -71,25 +71,25 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
                                         <?php } ?>
                                     </td>
 
-                                    <td><?= $role['deleted_at'] ? 'Yes' : 'No'; ?></td>
+                                    <td><?= ($role['deleted_at'] !== null && $role['deleted_at'] !== '') ? 'Yes' : 'No'; ?></td>
 
                                     <td>
-                                        <?php if ($role['deleted_at']) { ?>
+                                        <?php if ($role['deleted_at'] !== null && $role['deleted_at'] !== '') { ?>
 
                                             <button class="btn btn-success btn-sm"
-                                                    onclick="confirmRestore(<?= $role['id']; ?>)">
+                                                onclick="confirmRestore(<?= $role['id']; ?>)">
                                                 Restore
                                             </button>
 
                                         <?php } else { ?>
 
                                             <a href="edit.php?id=<?= $role['id']; ?>"
-                                               class="btn btn-info btn-sm">
+                                                class="btn btn-info btn-sm">
                                                 Edit
                                             </a>
 
                                             <button class="btn btn-danger btn-sm"
-                                                    onclick="confirmDelete(<?= $role['id']; ?>)">
+                                                onclick="confirmDelete(<?= $role['id']; ?>)">
                                                 Delete
                                             </button>
 
@@ -115,40 +115,39 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
 <script>
-$(document).ready(function () {
-    $('#rolesTable').DataTable();
-});
-
-// delete confirmation
-function confirmDelete(roleId) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'This role will be deleted',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = 'delete.php?id=' + roleId;
-        }
+    $(document).ready(function() {
+        $('#rolesTable').DataTable();
     });
-}
 
-// restore confirmation
-function confirmRestore(roleId) {
-    Swal.fire({
-        title: 'Restore role?',
-        text: 'This role will be restored',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, restore'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = 'restore.php?id=' + roleId;
-        }
-    });
-}
+    // delete confirmation
+    function confirmDelete(roleId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This role will be deleted',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'delete.php?id=' + roleId;
+            }
+        });
+    }
+
+    // restore confirmation
+    function confirmRestore(roleId) {
+        Swal.fire({
+            title: 'Restore role?',
+            text: 'This role will be restored',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, restore'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'restore.php?id=' + roleId;
+            }
+        });
+    }
 </script>
 
-<?php require_once __DIR__ . '/../includes/layouts/admin/footer.php';
- ?>
+<?php require_once '../../includes/footer.php'; ?>

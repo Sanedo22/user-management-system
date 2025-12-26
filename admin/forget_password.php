@@ -10,8 +10,8 @@ require_once '../config/constants.php'
     <title>Forgot Password</title>
 
     <!-- SB Admin 2 CSS -->
-    <link href="<?= BASE_URL ?>assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="<?= BASE_URL ?>assets/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gradient-primary">
@@ -63,9 +63,9 @@ require_once '../config/constants.php'
 </div>
 
 <!-- Scripts -->
-<script src="<?= BASE_URL ?>assets/vendor/jquery/jquery.min.js"></script>
-<script src="<?= BASE_URL ?>assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="<?= BASE_URL ?>assets/js/sb-admin-2.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/vendor/jquery/jquery.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/js/sb-admin-2.min.js"></script>
 
 </body>
 </html>

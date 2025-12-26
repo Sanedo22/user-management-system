@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <!-- Datatables bootstrap4 -->
     <link rel="stylesheet"
-      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+        href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -60,6 +60,12 @@ if (session_status() === PHP_SESSION_NONE) {
                 </li>
             <?php endif; ?>
 
+            <li class="nav-item">
+                <a class="nav-link" href="<?= BASE_URL ?>/admin/profile.php">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
             <hr class="sidebar-divider">
 
             <li class="nav-item">

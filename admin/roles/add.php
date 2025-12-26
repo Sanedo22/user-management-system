@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $title = 'Add Role';
-require_once __DIR__ . '/../../includes/layouts/admin/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="container-fluid">
 
@@ -143,5 +143,5 @@ require_once __DIR__ . '/../../includes/layouts/admin/header.php';
 
 </div>
 
-<?php require_once __DIR__ . '/../includes/layouts/admin/footer.php';
+<?php require_once __DIR__ . '/../../includes/footer.php';
  ?>

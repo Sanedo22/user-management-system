@@ -82,21 +82,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<link rel="stylesheet" href="../../assets/css/form.css">
-<div class="form-container">
-    <div class="form-card">
-<h2>Two-Factor Authentication</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-<form method="post">
-    <div class="form-group">
-    <input type="text" name="otp" placeholder="6-digit OTP" required>
-    <br><br>
-    <button type="submit">Verify</button>
-    </div>
-</form>
-    </div>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <title>Two-Factor Authentication</title>
 
-<?php if ($error): ?>
-    <p style="color:red"><?= htmlspecialchars($error) ?></p>
-<?php endif; ?>
+    <!-- SB Admin 2 CSS -->
+    <link href="../../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-4 col-lg-5 col-md-6">
+
+                <div class="card shadow-lg my-5">
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+                            <h1 class="h4 text-gray-900">
+                                Two-Factor Authentication
+                            </h1>
+                            <p class="text-muted small">
+                                Enter the 6-digit code from your authenticator app
+                            </p>
+                        </div>
+
+                        <?php if ($error): ?>
+                            <div class="alert alert-danger text-center">
+                                <?= htmlspecialchars($error) ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="post">
+
+                            <div class="form-group">
+                                <input type="text"
+                                    name="otp"
+                                    class="form-control form-control-user text-center"
+                                    placeholder="6-digit OTP"
+                                    maxlength="6"
+                                    required>
+                            </div>
+
+                            <button type="submit"
+                                class="btn btn-primary btn-user btn-block">
+                                Verify OTP
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>

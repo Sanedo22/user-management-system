@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/repo/auth.php';
 requireLogin();
+requireRole(['Admin', 'Super Admin']);
 
 
 require_once '../config/database.php';
@@ -25,7 +26,6 @@ $totalRoles = (int)$stmt->fetchColumn();
 
     <!-- MAIN ACTIONS -->
     <div class="row">
-
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-left-primary">
                 <div class="card-body">

@@ -17,13 +17,18 @@ $stmt = $db->prepare($sql);
 $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($user && $user['twofa_enabled']) {
+if ($user && $user['twofa_enabled'] && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $_SESSION['swal'] = [
         'icon'  => 'info',
         'title' => 'Already Enabled',
         'text'  => 'Two-Factor Authentication is already enabled'
     ];
-    header('Location: ../dashboard.php');
+
+    $adminRoles = ['Super Admin', 'Admin'];
+    $redirectAfter2FA = in_array($_SESSION['user']['role_name'], $adminRoles)
+        ? '../dashboard.php'
+        : '../users/dashboard.php';
+    header('Location: ' . $redirectAfter2FA);
     exit();
 }
 
@@ -64,8 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => '2FA Enabled',
             'text'  => 'Two-Factor Authentication has been enabled successfully'
         ];
-
-        header('Location: ../dashboard.php');
+        $adminRoles = ['Super Admin', 'Admin'];
+        $redirectAfter2FA = in_array($_SESSION['user']['role_name'], $adminRoles)
+            ? '../dashboard.php'
+            : '../users/dashboard.php';
+        header('Location: ' . $redirectAfter2FA);
         exit();
     }
 
@@ -79,54 +87,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $title = 'Enable Two-Factor Authentication';
-require_once '../../includes/header.php';
+// require_once '../../includes/header.php';
 ?>
 
-<div class="container-fluid">
+<!DOCTYPE html>
+<html lang="en">
 
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
+<head>
+    <meta charset="UTF-8">
+    <title><?= $title ?></title>
 
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
+    <!-- Bootstrap -->
+    <link href="../../assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/sb-admin-2.min.css" rel="stylesheet">
 
-                    <h4 class="mb-3 text-gray-800">
-                        Enable Two-Factor Authentication
-                    </h4>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 
-                    <p class="text-muted">
-                        Scan this QR code using Google Authenticator,
-                        Microsoft Authenticator, or Authy.
-                    </p>
+<body class="bg-light">
 
-                    <img src="<?= htmlspecialchars($qrUrl) ?>"
-                         alt="QR Code"
-                         class="img-fluid mb-4"
-                         style="max-width:200px;">
 
-                    <form method="post" class="col-md-6 mx-auto">
+    <div class="container-fluid">
 
-                        <div class="form-group">
-                            <input type="text"
-                                   name="otp"
-                                   class="form-control text-center"
-                                   placeholder="Enter 6-digit OTP"
-                                   required>
-                        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
 
-                        <button type="submit"
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+
+                        <h4 class="mb-3 text-gray-800">
+                            Enable Two-Factor Authentication
+                        </h4>
+
+                        <p class="text-muted">
+                            Scan this QR code using Google Authenticator,
+                            Microsoft Authenticator, or Authy.
+                        </p>
+
+                        <img src="<?= htmlspecialchars($qrUrl) ?>"
+                            alt="QR Code"
+                            class="img-fluid mb-4"
+                            style="max-width:200px;">
+
+                        <form method="post" class="col-md-6 mx-auto">
+
+                            <div class="form-group">
+                                <input type="text"
+                                    name="otp"
+                                    class="form-control text-center"
+                                    placeholder="Enter 6-digit OTP"
+                                    required>
+                            </div>
+
+                            <button type="submit"
                                 class="btn btn-primary btn-block">
-                            Verify & Enable 2FA
-                        </button>
+                                Verify & Enable 2FA
+                            </button>
 
-                    </form>
+                        </form>
 
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
+
     </div>
 
-</div>
+    <script src="../../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/sb-admin-2.min.js"></script>
 
-<?php require_once '../../includes/footer.php'; ?>
+    <?php require_once '../../includes/services/swal_render.php'; ?>
+</body>
+
+</html>
+
+
+<!-- require_once '../../includes/footer.php' -->

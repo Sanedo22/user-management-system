@@ -128,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
     <title>Login</title>
 
     <!-- SB Admin 2 CSS -->
-    <link href="<?= BASE_URL ?>assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="<?= BASE_URL ?>assets/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
 
 </head>
 
