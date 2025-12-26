@@ -93,8 +93,7 @@ class RoleService
 
         $updated = $this->repo->update($id, [
             'name'   => $name,
-            'slug'   => $slug,
-            'status' => $status
+            'slug'   => $slug
         ]);
 
         if ($updated) {
@@ -166,7 +165,6 @@ class RoleService
 
         if ($restored) {
 
-            // 🔑 IMPORTANT FIX: re-activate role explicitly
             $this->repo->update($id, [
                 'status' => 1
             ]);
@@ -222,22 +220,26 @@ class RoleService
     public function isRoleAssignedToUsers($roleId)
     {
         $sql = "SELECT COUNT(*) 
-                FROM users WHERE role_id = ? 
-                AND deleted_at IS NULL
-                AND status = 1";
+            FROM users 
+            WHERE role_id = ?
+              AND deleted_at IS NULL
+              AND status = 1";
+
         $stmt = $this->repo->db->prepare($sql);
         $stmt->execute([$roleId]);
+
         return $stmt->fetchColumn() > 0;
     }
 
-    // public function syncRoleStatus($roleId)
-    // {
-    //     $isAssigned = $this->isRoleAssignedToUsers($roleId);
 
-    //     $status = $isAssigned ? 1 : 0;
+    public function syncRoleStatus($roleId)
+    {
+        $isAssigned = $this->isRoleAssignedToUsers($roleId);
 
-    //     $sql = "UPDATE roles SET status = ? WHERE id = ?";
-    //     $stmt = $this->repo->db->prepare($sql);
-    //     $stmt->execute([$status, $roleId]);
-    // }
+        $status = $isAssigned ? 1 : 0;
+
+        $sql = "UPDATE roles SET status = ? WHERE id = ?";
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$status, $roleId]);
+    }
 }

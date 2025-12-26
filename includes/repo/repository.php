@@ -101,7 +101,7 @@ class Repository
     public function restore($id)
     {
         $sql = "UPDATE {$this->table} 
-                SET deleted_at = NULL AND status = 1
+                SET deleted_at = NULL, status = 1
                 WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);

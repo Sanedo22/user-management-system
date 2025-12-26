@@ -116,16 +116,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Status -->
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="status" class="form-control">
-                        <option value="1" <?= ($status === '1') ? 'selected' : '' ?>>Active</option>
-                        <option value="0" <?= ($status === '0') ? 'selected' : '' ?>>Inactive</option>
-                    </select>
-                    <?php if (isset($fieldErrors['status'])): ?>
-                        <small class="text-danger"><?= htmlspecialchars($fieldErrors['status']) ?></small>
-                    <?php endif; ?>
-                </div>
 
                 <!-- Actions -->
                 <button type="submit" class="btn btn-primary btn-sm">
