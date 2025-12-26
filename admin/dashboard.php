@@ -1,7 +1,7 @@
 <?php
 require_once '../includes/repo/auth.php';
 requireLogin();
-requireRole(['Admin', 'Super Admin']);
+requireRole(['Admin', 'Manager', 'Super Admin']);
 
 
 require_once '../config/database.php';
@@ -37,88 +37,93 @@ $deletedUsers = (int)$stmt->fetchColumn();
 
 <div class="container-fluid">
 
-    <h1 class="h3 mb-4 text-gray-800">Admin Dashboard</h1>
+    <h1 class="h3 mb-4 text-gray-800">User-Management-System</h1>
 
-    <div class="mb-4">
-        <a href="../admin/users/add.php" class="btn btn-primary btn-sm me-2">
-            + Add User
-        </a>
+    <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin'])): ?>
+        <div class="mb-4">
+            <a href="../admin/users/add.php" class="btn btn-primary btn-sm me-2">
+                + Add User
+            </a>
+        <?php endif; ?>
 
         <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
             <a href="../admin/roles/add.php" class="btn btn-secondary btn-sm">
                 + Add Role
             </a>
         <?php endif; ?>
-    </div>
-
-    <!-- MAIN ACTIONS -->
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-left-primary">
-                <div class="card-body">
-                    <h6 class="text-uppercase text-primary fw-bold mb-1">
-                        Total Users
-                    </h6>
-                    <h2 class="mb-0">
-                        <?= $totalUsers ?>
-                    </h2>
-                    <small class="text-muted">
-                        Active registered users in the system
-                    </small>
-                </div>
-            </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-left-success">
-                <div class="card-body">
-                    <h6 class="text-uppercase text-success fw-bold mb-1">
-                        Users Online
-                    </h6>
-                    <h2 class="mb-0"><?= $onlineUsers ?></h2>
-                    <small class="text-muted">
-                        Active in last 30 minutes
-                    </small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-left-danger">
-                <div class="card-body">
-                    <h6 class="text-uppercase text-danger fw-bold mb-1">
-                        Deleted Users
-                    </h6>
-                    <h2 class="mb-0"><?= $deletedUsers ?></h2>
-                    <small class="text-muted">
-                        Soft-deleted accounts
-                    </small>
-                </div>
-            </div>
-        </div>
-
-
-
-
-        <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm border-left-secondary">
-                    <div class="card-body">
-                        <h6 class="text-uppercase text-secondary fw-bold mb-1">
-                            Total Roles
-                        </h6>
-                        <h2 class="mb-0">
-                            <?= $totalRoles ?>
-                        </h2>
-                        <small class="text-muted">
-                            Roles defined for access control
-                        </small>
+        <!-- MAIN ACTIONS -->
+        <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin'])): ?>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm border-left-primary">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-primary fw-bold mb-1">
+                                Total Users
+                            </h6>
+                            <h2 class="mb-0">
+                                <?= $totalUsers ?>
+                            </h2>
+                            <small class="text-muted">
+                                Active registered users in the system
+                            </small>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
 
-    </div>
+            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin'])): ?>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm border-left-success">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-success fw-bold mb-1">
+                                Users Online
+                            </h6>
+                            <h2 class="mb-0"><?= $onlineUsers ?></h2>
+                            <small class="text-muted">
+                                Active in last 30 minutes
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin'])): ?>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm border-left-danger">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-danger fw-bold mb-1">
+                                Deleted Users
+                            </h6>
+                            <h2 class="mb-0"><?= $deletedUsers ?></h2>
+                            <small class="text-muted">
+                                Soft-deleted accounts
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm border-left-secondary">
+                        <div class="card-body">
+                            <h6 class="text-uppercase text-secondary fw-bold mb-1">
+                                Total Roles
+                            </h6>
+                            <h2 class="mb-0">
+                                <?= $totalRoles ?>
+                            </h2>
+                            <small class="text-muted">
+                                Roles defined for access control
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            </div>
 
 </div>
 
