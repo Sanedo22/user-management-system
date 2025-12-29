@@ -73,15 +73,6 @@ if (session_status() === PHP_SESSION_NONE) {
                 </li>
             <?php endif; ?>
 
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin' , 'Manager'])): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/tasks/deleted.php">
-                        <i class="fas fa-trash-restore"></i>
-                        <span>Deleted Tasks</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-
             <li class="nav-item">
                 <a class="nav-link" href="<?= BASE_URL ?>/admin/profile.php">
                     <i class="fas fa-user"></i>

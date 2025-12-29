@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
 
                         <div class="text-center mb-4">
                             <h1 class="h4 text-gray-900">
-                                <?= isset($_SESSION['twofa_stage']) ? 'OTP Verification' : 'Admin Login' ?>
+                                <?= isset($_SESSION['twofa_stage']) ? 'OTP Verification' : 'Login' ?>
                             </h1>
                         </div>
 

@@ -22,6 +22,10 @@ require_once '../../includes/header.php';
 
     <h1 class="h3 mb-4 text-gray-800">Tasks Overview</h1>
 
+    <div class="mb-3">
+    <a href="list.php" class="btn btn-primary btn-sm">Back to list</a>
+    </div>
+
     <?php if (empty($tasks)): ?>
         <div class="alert alert-info">
             No tasks found.
