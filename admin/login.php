@@ -39,9 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['otp'])) {
     $role = $_SESSION['user']['role_name'];
 
     if (in_array($role, ['Super Admin', 'Admin'])) {
-        header('Location: dashboard.php');
+        header('Location: ' . BASE_URL . '/admin/dashboard.php');
+    } elseif ($role === 'Manager') {
+        header('Location: ' . BASE_URL . '/admin/tasks/list.php');
     } else {
-        header('Location: ../admin/users/dashboard.php');
+        header('Location: ' . BASE_URL . '/admin/users/dashboard.php');
     }
     exit();
 }
@@ -112,10 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
     ]);
 
     //After 2fa
-    if (in_array($user['role_name'], ['Super Admin', 'Admin'])) {
-        header('Location: dashboard.php');
+    $role = $user['role_name'];
+
+    if (in_array($role, ['Super Admin', 'Admin'])) {
+        header('Location: ' . BASE_URL . '/admin/dashboard.php');
+    } elseif ($role === 'Manager') {
+        header('Location: ' . BASE_URL . '/admin/tasks/list.php');
     } else {
-        header('Location: ../admin/users/dashboard.php');
+        header('Location: ' . BASE_URL . '/admin/users/dashboard.php');
     }
     exit();
 }

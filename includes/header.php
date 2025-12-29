@@ -68,16 +68,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <li class="nav-item">
                     <a class="nav-link" href="<?= BASE_URL ?>/admin/tasks/list.php">
                         <i class="fas fa-tasks"></i>
-                        <span>My Tasks</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-
-            <?php if (in_array($_SESSION['user']['role_name'], ['Manager', 'Super Admin', 'Admin'])): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/tasks/overview.php">
-                        <i class="fas fa-tasks"></i>
-                        <span>All Tasks</span>
+                        <span>Tasks</span>
                     </a>
                 </li>
             <?php endif; ?>

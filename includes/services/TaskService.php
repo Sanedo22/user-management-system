@@ -22,7 +22,8 @@ class TaskService
             assignee.email AS assigned_to_email
         FROM tasks t
         JOIN users assigner ON assigner.id = t.assigned_by
-        JOIN users assignee ON assignee.id = t.assigned_to
+        JOIN users assignee ON assignee.id = t.assigned_to 
+        WHERE t.deleted_at IS NULL
         ORDER BY t.created_at DESC
     ";
 
@@ -31,10 +32,17 @@ class TaskService
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getTaskById($taskId)
+    {
+        $sql = "SELECT * FROM tasks WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$taskId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 
     //create task
-    //create task
-    public function createTask($title, $description, $assignedTo, $assignedBy)
+    public function createTask($title, $description, $assignedTo, $assignedBy, $startDate, $endDate)
     {
         if (empty($title)) {
             return ['success' => false, 'errors' => ['Task title is required']];
@@ -67,6 +75,21 @@ class TaskService
             ];
         }
 
+        if (empty($startDate) || empty($endDate)) {
+            return [
+                'success' => false,
+                'errors' => ['Start date and End date are required']
+            ];
+        }
+
+        if ($startDate > $endDate) {
+            return [
+                'success' => false,
+                'errors' => ['End date cannot be before start date']
+            ];
+        }
+
+
         //RBAC check
         if (!$this->canAssignTask($actor, $target)) {
             return [
@@ -80,6 +103,8 @@ class TaskService
             'description' => $description,
             'assigned_to' => $assignedTo,
             'assigned_by' => $assignedBy,
+            'start_date'  => $startDate,
+            'end_date'    => $endDate,
             'status'      => 'Pending'
         ];
 
@@ -90,6 +115,61 @@ class TaskService
             : ['success' => false, 'errors' => ['Failed to assign task']];
     }
 
+    public function updateTask($taskId, $title, $description, $startDate, $endDate)
+    {
+        if (empty($title)) {
+            return ['success' => false, 'errors' => ['Task title is required']];
+        }
+
+        if ($startDate > $endDate) {
+            return ['success' => false, 'errors' => ['End date cannot be before start date']];
+        }
+
+        $updated = $this->repo->update($taskId, [
+            'title'       => $title,
+            'description' => $description,
+            'start_date'  => $startDate,
+            'end_date'    => $endDate
+        ]);
+
+        return $updated
+            ? ['success' => true, 'message' => 'Task updated successfully']
+            : ['success' => false, 'errors' => ['Update failed']];
+    }
+
+    public function softDeleteTask($taskId)
+    {
+        return $this->repo->update($taskId, [
+            'deleted_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function getDeletedTasks()
+    {
+        $sql = "
+        SELECT t.*,
+               u1.email AS assigned_by_email,
+               u2.email AS assigned_to_email
+        FROM tasks t
+        JOIN users u1 ON u1.id = t.assigned_by
+        JOIN users u2 ON u2.id = t.assigned_to
+        WHERE t.deleted_at IS NOT NULL
+        ORDER BY t.deleted_at DESC
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function restoreTask($taskId)
+    {
+        return $this->repo->update($taskId, [
+            'deleted_at' => null
+        ]);
+    }
+
+
 
     //fetch user tasks
     public function getTasksForUser($userId)
@@ -99,6 +179,7 @@ class TaskService
                 FROM tasks t
                 JOIN users u ON u.id = t.assigned_by
                 WHERE t.assigned_to = ?
+                AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
 
         $stmt = $this->db->prepare($sql);
@@ -114,6 +195,7 @@ class TaskService
                 FROM tasks t
                 JOIN users u ON u.id = t.assigned_to
                 WHERE t.assigned_by = ?
+                AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
 
         $stmt = $this->db->prepare($sql);
@@ -122,12 +204,24 @@ class TaskService
     }
 
     //update task status 
-    public function updateTaskStatus($taskId, $status)
+    public function updateTaskStatus($taskId, $status, $userId)
     {
         $allowed = ['Pending', 'In Progress', 'Completed'];
 
         if (!in_array($status, $allowed)) {
             return ['success' => false, 'errors' => ['Invalid Status']];
+        }
+
+        // Fetch task
+        $task = $this->getTaskById($taskId);
+
+        if (!$task) {
+            return ['success' => false, 'errors' => ['Task not found']];
+        }
+
+        // Ownership check (VERY IMPORTANT)
+        if ((int)$task['assigned_to'] !== (int)$userId) {
+            return ['success' => false, 'errors' => ['Unauthorized']];
         }
 
         $updated = $this->repo->update($taskId, [
@@ -139,6 +233,7 @@ class TaskService
             : ['success' => false, 'errors' => ['Update failed']];
     }
 
+
     public function canAssignTask($assignedBy, $assignedTo)
     {
         // cannot assign to self
@@ -149,7 +244,7 @@ class TaskService
         // Manager → User only
         if (
             $assignedBy['role_name'] === 'Manager' &&
-            $assignedTo['role_name'] !== 'User'
+            in_array($assignedTo['role_name'], ['Super Admin', 'Admin', 'Manager'])
         ) {
             return false;
         }

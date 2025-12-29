@@ -51,6 +51,10 @@ $deletedUsers = (int)$stmt->fetchColumn();
                 + Add Role
             </a>
         <?php endif; ?>
+
+        <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
+            <a href="../admin/tasks/add.php" class="btn btn-primary btn-sm">+ Add Tasks </a>
+        <?php endif; ?>
         </div>
 
         <!-- MAIN ACTIONS -->
