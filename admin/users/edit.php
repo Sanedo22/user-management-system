@@ -213,7 +213,7 @@ require_once '../../includes/header.php';
                     <input type="email"
                         name="email"
                         class="form-control"
-                        value="<?= htmlspecialchars($email) ?>">
+                        value="<?= htmlspecialchars($email) ?>" readonly>
                     <?php if (isset($fieldErrors['email'])): ?>
                         <small class="text-danger"><?= htmlspecialchars($fieldErrors['email']) ?></small>
                     <?php endif; ?>

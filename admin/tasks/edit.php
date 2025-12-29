@@ -1,64 +1,43 @@
 <?php
 require_once '../../includes/repo/auth.php';
 requireLogin();
-requireRole(['Manager', 'Super Admin', 'Admin']);
+requireRole(['Admin', 'Manager', 'Super Admin']);
 
 require_once '../../config/database.php';
 require_once '../../includes/services/TaskService.php';
-require_once '../../includes/services/UserService.php';
 
 $db = (new Database())->getConnection();
-
 $taskService = new TaskService($db);
-$userService = new UserService($db);
-
-$users = $userService->getAllUsers(false);
-
-$loggedRole   = $_SESSION['user']['role_name'];
-$loggedUserId = $_SESSION['user']['id'];
 
 /* ================================
-   ASSIGNABLE USERS (RBAC)
+   GET TASK
 ================================ */
-$assignableUsers = [];
+$taskId = $_GET['id'] ?? null;
 
-foreach ($users as $user) {
+if (!$taskId) {
+    header('Location: list.php');
+    exit;
+}
 
-    if ($user['id'] == $loggedUserId) {
-        continue;
-    }
+$task = $taskService->getTaskById($taskId);
 
-    if ($loggedRole === 'Manager' &&
-        in_array($user['role_name'], ['Super Admin', 'Admin', 'Manager'])) {
-        continue;
-    }
-
-    if ($loggedRole === 'Admin' &&
-        in_array($user['role_name'], ['Super Admin', 'Admin'])) {
-        continue;
-    }
-
-    if ($loggedRole === 'Super Admin' &&
-        $user['role_name'] === 'Super Admin') {
-        continue;
-    }
-
-    $assignableUsers[] = $user;
+if (!$task) {
+    header('Location: list.php');
+    exit;
 }
 
 /* ================================
-   OLD INPUT + ERRORS
+   OLD INPUT
 ================================ */
-$old    = $_SESSION['old'] ?? [];
-$errors = $_SESSION['errors'] ?? [];
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['old']);
 
-unset($_SESSION['old'], $_SESSION['errors']);
+$title       = $old['title']       ?? $task['title'];
+$description = $old['description'] ?? $task['description'];
+$startDate   = $old['start_date']  ?? $task['start_date'];
+$endDate     = $old['end_date']    ?? $task['end_date'];
 
-$title       = $old['title'] ?? '';
-$description = $old['description'] ?? '';
-$assignedTo  = $old['assigned_to'] ?? '';
-$startDate   = $old['start_date'] ?? '';
-$endDate     = $old['end_date'] ?? '';
+$errors = [];
 
 /* ================================
    FORM SUBMIT
@@ -67,20 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title       = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $assignedTo  = $_POST['assigned_to'] ?? null;
-    $assignedBy  = $loggedUserId;
     $startDate   = $_POST['start_date'] ?? null;
     $endDate     = $_POST['end_date'] ?? null;
-
-    $errors = [];
 
     // VALIDATIONS
     if ($title === '') {
         $errors[] = 'Task title is required';
-    }
-
-    if (!$assignedTo) {
-        $errors[] = 'Please select a user';
     }
 
     if (!$startDate || !$endDate) {
@@ -93,26 +64,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // IF ERRORS → REDIRECT BACK
     if ($errors) {
-        $_SESSION['old']    = $_POST;
+        $_SESSION['old'] = $_POST;
         $_SESSION['errors'] = $errors;
-        header('Location: add.php');
+        header('Location: edit.php?id=' . $taskId);
         exit;
     }
 
-    // CREATE TASK
-    $result = $taskService->createTask(
+    // UPDATE TASK
+    $result = $taskService->updateTask(
+        $taskId,
         $title,
         $description,
-        $assignedTo,
-        $assignedBy,
         $startDate,
         $endDate
     );
 
     if (!$result['success']) {
-        $_SESSION['old']    = $_POST;
         $_SESSION['errors'] = $result['errors'];
-        header('Location: add.php');
+        header('Location: edit.php?id=' . $taskId);
         exit;
     }
 
@@ -120,13 +89,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$pagetitle = 'Assign Task';
+/* ================================
+   ERRORS FROM SESSION
+================================ */
+$errors = $_SESSION['errors'] ?? [];
+unset($_SESSION['errors']);
+
+$pagetitle = 'Edit Task';
 require_once '../../includes/header.php';
 ?>
 
 <div class="container-fluid">
 
-    <h1 class="h3 mb-4 text-gray-800">Assign Task</h1>
+    <h1 class="h3 mb-4 text-gray-800">Edit Task</h1>
 
     <?php if ($errors): ?>
         <div class="alert alert-danger">
@@ -158,22 +133,6 @@ require_once '../../includes/header.php';
                               rows="4"><?= htmlspecialchars($description) ?></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label>Assign To</label>
-                    <select name="assigned_to" class="form-control">
-                        <option value="">-- Select User --</option>
-                        <?php foreach ($assignableUsers as $user): ?>
-                            <option value="<?= $user['id'] ?>"
-                                <?= ($assignedTo == $user['id']) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars(
-                                    $user['first_name'] . ' ' . $user['last_name']
-                                ) ?>
-                                (<?= htmlspecialchars($user['email']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
                 <div class="row">
                     <div class="col-md-2">
                         <label>Start Date</label>
@@ -194,7 +153,7 @@ require_once '../../includes/header.php';
 
                 <div class="mt-3">
                     <button class="btn btn-primary">
-                        Assign Task
+                        Update Task
                     </button>
 
                     <a href="list.php"
