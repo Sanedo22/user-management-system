@@ -40,6 +40,27 @@ class TaskService
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getTodayTasksByStartDate()
+    {
+        $sql = "
+        SELECT 
+            t.*,
+            u1.email AS assigned_to_email,
+            u2.email AS assigned_by_email
+        FROM tasks t
+        JOIN users u1 ON u1.id = t.assigned_to
+        JOIN users u2 ON u2.id = t.assigned_by
+        WHERE DATE(t.start_date) = CURDATE()
+          AND t.deleted_at IS NULL
+        ORDER BY t.start_date ASC
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 
     //create task
     public function createTask($title, $description, $assignedTo, $assignedBy, $startDate, $endDate)
@@ -175,9 +196,11 @@ class TaskService
     public function getTasksForUser($userId)
     {
         $sql = "SELECT t.*, 
-                       u.email AS assigned_by_email
+                       u1.email AS assigned_by_email,
+                       u2.email AS assigned_to_email
                 FROM tasks t
-                JOIN users u ON u.id = t.assigned_by
+                JOIN users u1 ON u1.id = t.assigned_by
+                JOIN users u2 ON u2.id = t.assigned_to
                 WHERE t.assigned_to = ?
                 AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
@@ -191,9 +214,11 @@ class TaskService
     public function getTasksAssignedBy($adminId)
     {
         $sql = "SELECT t.*, 
-                       u.email AS assigned_to_email
+                       u1.email AS assigned_by_email,
+                       u2.email AS assigned_to_email
                 FROM tasks t
-                JOIN users u ON u.id = t.assigned_to
+                JOIN users u1 ON u1.id = t.assigned_by
+                JOIN users u2 ON u2.id = t.assigned_to
                 WHERE t.assigned_by = ?
                 AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
@@ -258,5 +283,39 @@ class TaskService
         }
 
         return true;
+    }
+
+    public function addComment($taskId, $userId, $comment)
+    {
+        if (trim($comment) === '') {
+            return ['success' => false, 'error' => 'Comment cannot be empty'];
+        }
+
+        // Security: ensure task belongs to user (either assigned to OR assigned by them)
+        $task = $this->getTaskById($taskId);
+        if (!$task || ((int)$task['assigned_to'] !== (int)$userId && (int)$task['assigned_by'] !== (int)$userId)) {
+            return ['success' => false, 'error' => 'Unauthorized'];
+        }
+
+        $sql = "INSERT INTO task_comments (task_id, user_id, comment)
+            VALUES (?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$taskId, $userId, $comment]);
+
+        return ['success' => true];
+    }
+
+    public function getCommentsForTask($taskId)
+    {
+        $sql = "
+        SELECT c.comment, c.created_at, u.email
+        FROM task_comments c
+        JOIN users u ON u.id = c.user_id
+        WHERE c.task_id = ?
+        ORDER BY c.created_at DESC
+    ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$taskId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

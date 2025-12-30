@@ -17,9 +17,6 @@ $users = $userService->getAllUsers(false);
 $loggedRole   = $_SESSION['user']['role_name'];
 $loggedUserId = $_SESSION['user']['id'];
 
-/* ================================
-   ASSIGNABLE USERS (RBAC)
-================================ */
 $assignableUsers = [];
 
 foreach ($users as $user) {
@@ -28,27 +25,30 @@ foreach ($users as $user) {
         continue;
     }
 
-    if ($loggedRole === 'Manager' &&
-        in_array($user['role_name'], ['Super Admin', 'Admin', 'Manager'])) {
+    if (
+        $loggedRole === 'Manager' &&
+        in_array($user['role_name'], ['Super Admin', 'Admin', 'Manager'])
+    ) {
         continue;
     }
 
-    if ($loggedRole === 'Admin' &&
-        in_array($user['role_name'], ['Super Admin', 'Admin'])) {
+    if (
+        $loggedRole === 'Admin' &&
+        in_array($user['role_name'], ['Super Admin', 'Admin', 'Manager'])
+    ) {
         continue;
     }
 
-    if ($loggedRole === 'Super Admin' &&
-        $user['role_name'] === 'Super Admin') {
+    if (
+        $loggedRole === 'Super Admin' &&
+        in_array($user['role_name'], ['Super Admin', 'Admin', 'Manager'])
+    ) {
         continue;
     }
 
     $assignableUsers[] = $user;
 }
 
-/* ================================
-   OLD INPUT + ERRORS
-================================ */
 $old    = $_SESSION['old'] ?? [];
 $errors = $_SESSION['errors'] ?? [];
 
@@ -60,9 +60,6 @@ $assignedTo  = $old['assigned_to'] ?? '';
 $startDate   = $old['start_date'] ?? '';
 $endDate     = $old['end_date'] ?? '';
 
-/* ================================
-   FORM SUBMIT
-================================ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title       = trim($_POST['title'] ?? '');
@@ -146,16 +143,16 @@ require_once '../../includes/header.php';
                 <div class="form-group">
                     <label>Task Title</label>
                     <input type="text"
-                           name="title"
-                           class="form-control"
-                           value="<?= htmlspecialchars($title) ?>">
+                        name="title"
+                        class="form-control"
+                        value="<?= htmlspecialchars($title) ?>">
                 </div>
 
                 <div class="form-group">
                     <label>Description</label>
                     <textarea name="description"
-                              class="form-control"
-                              rows="4"><?= htmlspecialchars($description) ?></textarea>
+                        class="form-control"
+                        rows="4"><?= htmlspecialchars($description) ?></textarea>
                 </div>
 
                 <div class="form-group">
@@ -178,17 +175,17 @@ require_once '../../includes/header.php';
                     <div class="col-md-2">
                         <label>Start Date</label>
                         <input type="date"
-                               name="start_date"
-                               class="form-control"
-                               value="<?= htmlspecialchars($startDate) ?>">
+                            name="start_date"
+                            class="form-control"
+                            value="<?= htmlspecialchars($startDate) ?>">
                     </div>
 
                     <div class="col-md-2">
                         <label>End Date</label>
                         <input type="date"
-                               name="end_date"
-                               class="form-control"
-                               value="<?= htmlspecialchars($endDate) ?>">
+                            name="end_date"
+                            class="form-control"
+                            value="<?= htmlspecialchars($endDate) ?>">
                     </div>
                 </div>
 
@@ -198,7 +195,7 @@ require_once '../../includes/header.php';
                     </button>
 
                     <a href="list.php"
-                       class="btn btn-secondary ml-2">
+                        class="btn btn-secondary ml-2">
                         Cancel
                     </a>
                 </div>

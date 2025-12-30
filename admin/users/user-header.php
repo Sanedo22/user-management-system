@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?= $pagetitle ?? ($title ?? 'Admin Panel') ?></title>
+    <title><?= $pagetitle ?? ($title ?? 'User Panel') ?></title>
 
     <!-- SB Admin 2 CSS -->
     <link href="<?= BASE_URL ?>/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
@@ -36,47 +36,24 @@ if (session_status() === PHP_SESSION_NONE) {
             </a>
 
             <hr class="sidebar-divider my-0">
-
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/dashboard.php">
+                    <a class="nav-link" href="<?= BASE_URL ?>/admin/users/dashboard.php">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
-            <?php endif; ?>
 
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/users/list.php">
-                        <i class="fas fa-fw fa-users"></i>
-                        <span>Users</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-
-            <?php if ($_SESSION['user']['role_name'] === 'Super Admin'): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/roles/list.php">
-                        <i class="fas fa-fw fa-user-shield"></i>
-                        <span>Roles</span>
-                    </a>
-                </li>
-            <?php endif; ?>
-
-            <?php if (in_array($_SESSION['user']['role_name'], ['Manager', 'Super Admin', 'Admin'])): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/tasks/list.php">
+                    <a class="nav-link" href="<?= BASE_URL ?>/admin/users/user_tasks.php">
                         <i class="fas fa-tasks"></i>
                         <span>Tasks</span>
                     </a>
                 </li>
-            <?php endif; ?>
 
             <hr class="sidebar-divider">
 
             <li class="nav-item">
-                <a class="nav-link" href="<?= BASE_URL ?>/admin/profile.php">
+                <a class="nav-link" href="<?= BASE_URL ?>/admin/users/user_profile.php">
                     <i class="fas fa-user"></i>
                     <span>My Profile</span>
                 </a>

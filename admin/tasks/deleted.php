@@ -1,7 +1,7 @@
 <?php
 require_once '../../includes/repo/auth.php';
 requireLogin();
-requireRole(['Super Admin']);
+requireRole(['Super Admin', 'Admin', 'Manager']);
 
 require_once '../../config/database.php';
 require_once '../../includes/services/TaskService.php';
