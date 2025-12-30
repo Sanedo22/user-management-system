@@ -1,10 +1,10 @@
 <?php
-require_once '../includes/repo/auth.php';
+require_once '../../includes/repo/auth.php';
 requireLogin();
 
-require_once '../config/database.php';
-require_once '../config/constants.php';
-require_once '../includes/services/UserService.php';
+require_once '../../config/database.php';
+require_once '../../config/constants.php';
+require_once '../../includes/services/UserService.php';
 
 $db = (new Database())->getConnection();
 $userService = new UserService($db); // Instantiate UserService
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $title = 'My Profile';
-require_once '../includes/header.php';
+require_once 'user-header.php';
 ?>
 
 <div class="container-fluid">
@@ -177,8 +177,6 @@ require_once '../includes/header.php';
         </div>
 
     </div>
-    <!-- End Row -->
-
 </div>
 
 <script>
@@ -227,4 +225,4 @@ require_once '../includes/header.php';
 </script>
 
 
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once 'user_footer.php'; ?>

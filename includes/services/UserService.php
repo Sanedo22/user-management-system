@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../repo/repository.php';
-require_once '../../includes/services/RoleService.php';
+require_once __DIR__ . '/RoleService.php';
 
 class UserService
 {
@@ -87,7 +87,7 @@ class UserService
         $id = $this->repo->insert($data);
 
         if ($id) {
-            // role gained a user
+            // sync role
             $this->roleService->syncRoleStatus($role_id);
 
             return [
@@ -170,12 +170,12 @@ class UserService
         $updated = $this->repo->update($id, $data);
 
         if ($updated) {
-            // old role may lose this user
+            // old role sync
             if ($oldRoleId != $role_id) {
                 $this->roleService->syncRoleStatus($oldRoleId);
             }
 
-            // new role may gain this user
+            // new role sync
             $this->roleService->syncRoleStatus($role_id);
 
             return ['success' => true, 'message' => 'User updated successfully'];
@@ -217,7 +217,7 @@ class UserService
         $deleted = $this->repo->delete($id);
 
         if ($deleted) {
-            // role may lose this user
+            // update role count
             $this->roleService->syncRoleStatus($targetUser['role_id']);
 
             return ['success' => true, 'message' => 'User deleted successfully'];
@@ -257,7 +257,7 @@ class UserService
         $restored = $this->repo->restore($id);
 
         if ($restored) {
-            // role gains this user again
+            // restore role count
             $this->roleService->syncRoleStatus($data['role_id']);
 
             return ['success' => true, 'message' => 'User restored successfully'];
@@ -369,5 +369,118 @@ class UserService
         $stmt->execute([$userId]);
 
         return $stmt->fetchColumn() > 0;
+    }
+
+    /* =================== PASSWORD RESET =================== */
+
+    public function createPasswordResetToken($userId, $token, $expiresAt)
+    {
+        // old token delete
+        $sql = "DELETE FROM password_resets WHERE user_id = ?";
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$userId]);
+
+        // save new token
+        $sql = "INSERT INTO password_resets (user_id, token, expires_at, used) VALUES (?, ?, ?, 0)";
+        $stmt = $this->repo->db->prepare($sql);
+        return $stmt->execute([$userId, $token, $expiresAt]);
+    }
+
+    public function getPasswordResetByToken($token)
+    {
+        $sql = "SELECT * FROM password_resets 
+                WHERE token = ? 
+                AND expires_at > NOW() 
+                AND used = 0";
+
+        $stmt = $this->repo->db->prepare($sql);
+        $stmt->execute([$token]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function markPasswordResetUsed($id)
+    {
+        $sql = "UPDATE password_resets SET used = 1 WHERE id = ?";
+        $stmt = $this->repo->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
+    public function updateUserPassword($userId, $newHash)
+    {
+        $sql = "UPDATE users SET password = ? WHERE id = ?";
+        $stmt = $this->repo->db->prepare($sql);
+        return $stmt->execute([$newHash, $userId]);
+    }
+
+    /* =================== PROFILE HELPER =================== */
+
+    public function handleProfileUpdate($user, $postData, $filesData)
+    {
+        $userId = $user['id'];
+        $messages = ['errors' => [], 'success' => ''];
+        $db = $this->repo->db;
+
+        // 1. image upload
+        if (isset($postData['upload_image'])) {
+            if (!empty($filesData['profile_img']['name'])) {
+                $ext = pathinfo($filesData['profile_img']['name'], PATHINFO_EXTENSION);
+                $fileName = 'user_' . $userId . '.' . $ext;
+                
+                $uploadPath = __DIR__ . '/../../admin/uploads/profiles/' . $fileName;
+                
+                if(move_uploaded_file($filesData['profile_img']['tmp_name'], $uploadPath)) {
+                    $sql = "UPDATE users SET profile_img=? WHERE id=?";
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute([$fileName, $userId]);
+                    $messages['success'] = 'Profile image updated successfully';
+                } else {
+                     $messages['errors'][] = 'Failed to upload image';
+                }
+            }
+        }
+
+        // 1.5 remove image
+        if (isset($postData['remove_image'])) {
+            
+            // get current img
+            $currentImage = $user['profile_img'];
+
+            // default img delete mat karna
+            if (!empty($currentImage) && $currentImage !== 'default.jpg') {
+                
+                $filePath = __DIR__ . '/../../admin/uploads/profiles/' . $currentImage;
+                
+                // file delete
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            
+            // set null in db
+            $sql = "UPDATE users SET profile_img = NULL WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$userId]);
+            
+            $messages['success'] = 'Profile image removed successfully';
+        }
+
+        // 2. change password
+        if (isset($postData['change_password'])) {
+            $current = $postData['current_password'];
+            $new     = $postData['new_password'];
+            $confirm = $postData['confirm_password'];
+
+            if ($new !== $confirm) {
+                $messages['errors'][] = 'Passwords do not match';
+            } elseif (!password_verify($current, $user['password'])) {
+                $messages['errors'][] = 'Current password is incorrect';
+            } else {
+                $hash = password_hash($new, PASSWORD_DEFAULT);
+                $this->updateUserPassword($userId, $hash);
+                $messages['success'] = 'Password changed successfully';
+            }
+        }
+
+        return $messages;
     }
 }
