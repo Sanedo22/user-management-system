@@ -1,5 +1,5 @@
 <?php
-require_once '../../includes/repo/repository.php';
+require_once __DIR__ . '/../repo/repository.php';
 
 class RoleService
 {
