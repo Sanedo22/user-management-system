@@ -14,14 +14,14 @@ $taskId  = $_POST['task_id'] ?? null;
 $comment = trim($_POST['comment'] ?? '');
 $userId  = $_SESSION['user']['id'];
 
+$redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . '/admin/tasks/list.php');
+
 if (!$taskId || $comment === '') {
-    $redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . '/admin/users/user_tasks.php');
     header('Location: ' . $redirect);
     exit;
 }
 
 $taskService->addComment($taskId, $userId, $comment);
 
-$redirect = $_SERVER['HTTP_REFERER'] ?? (BASE_URL . '/admin/users/user_tasks.php');
 header('Location: ' . $redirect);
 exit;

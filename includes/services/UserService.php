@@ -121,23 +121,15 @@ class UserService
             return ['success' => false, 'errors' => ['Root Super Admin cannot be modified']];
         }
 
-        if ($_SESSION['user']['id'] == $id) {
-            return ['success' => false, 'errors' => ['You cannot modify your own role']];
-        }
-
-        $sql = "SELECT u.*, r.name AS role_name
-                FROM users u
-                LEFT JOIN roles r ON u.role_id = r.id
-                WHERE u.id = ?";
-        $stmt = $this->repo->db->prepare($sql);
-        $stmt->execute([$id]);
-        $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!$targetUser) {
             return ['success' => false, 'errors' => ['User not found']];
         }
 
         $oldRoleId = $targetUser['role_id'];
+
+        if ($_SESSION['user']['id'] == $id && (int)$role_id !== (int)$oldRoleId) {
+            return ['success' => false, 'errors' => ['You cannot modify your own role']];
+        }
 
         if (!$this->canEditUser($_SESSION['user'], $targetUser)) {
             return ['success' => false, 'errors' => ['You are not allowed to edit this user']];
@@ -327,9 +319,9 @@ class UserService
 
     private function canEditUser($loggedInUser, $targetUser)
     {
-        // Nobody edits themselves
+        // Users CAN edit themselves (e.g. for profile updates)
         if ($loggedInUser['id'] == $targetUser['id']) {
-            return false;
+            return true;
         }
 
         // Root Super Admin can edit anyone

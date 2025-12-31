@@ -47,10 +47,8 @@ require_once '../../includes/header.php';
             <a href="add.php" class="btn btn-primary btn-sm">
                 + Assign Task
             </a>
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
-                <a href="deleted.php" class="btn btn-primary btn-sm">Deleted Tasks</a><?php endif; ?>
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
-                <a href="overview.php" class="btn btn-primary btn-sm">All tasks</a><?php endif; ?>
+            <a href="deleted.php" class="btn btn-primary btn-sm">Deleted Tasks</a>
+            <a href="overview.php" class="btn btn-primary btn-sm">All tasks</a>
         </div>
     <?php endif; ?>
 
@@ -98,7 +96,6 @@ require_once '../../includes/header.php';
                                             <th>End Date</th>
                                             <th>Status</th>
                                             <th>Created</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>

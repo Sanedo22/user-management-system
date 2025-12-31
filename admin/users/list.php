@@ -47,16 +47,30 @@ require_once '../../includes/header.php';
                             <th>Role</th>
                             <th>Phone</th>
                             <th>Status</th>
-                            <th>Deleted</th>
                             <th style="width:180px;">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <?php foreach ($users as $user) { ?>
+                        <?php
+                        require_once '../../config/constants.php';
+                        $baseUrl = BASE_URL;
+
+                        foreach ($users as $user) {
+                            // profile image logic
+                            $profileImg = !empty($user['profile_img']) ? $user['profile_img'] : 'default.jpg';
+                            $profilePath = $baseUrl . '/admin/uploads/profiles/' . $profileImg;
+                        ?>
                             <tr class="<?= $user['deleted_at'] ? 'table-danger' : '' ?>">
                                 <td><?= $user['id']; ?></td>
-                                <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="<?= $profilePath ?>"
+                                            class="rounded-circle mr-2"
+                                            style="width:35px; height:35px; object-fit:cover;">
+                                        <span><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></span>
+                                    </div>
+                                </td>
                                 <td><?= htmlspecialchars($user['email']); ?></td>
                                 <td>
                                     <span class="badge badge-info">
@@ -75,7 +89,6 @@ require_once '../../includes/header.php';
                                         <span class="badge badge-secondary">Offline</span>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= $user['deleted_at'] ? 'Yes' : 'No'; ?></td>
                                 <td>
                                     <?php if ($user['deleted_at']) { ?>
                                         <button class="btn btn-success btn-sm"

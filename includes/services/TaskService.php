@@ -291,7 +291,7 @@ class TaskService
             return ['success' => false, 'error' => 'Comment cannot be empty'];
         }
 
-        // Security: ensure task belongs to user (either assigned to OR assigned by them)
+        // Security: ensure task belongs to user (Assignee OR Assigner)
         $task = $this->getTaskById($taskId);
         if (!$task || ((int)$task['assigned_to'] !== (int)$userId && (int)$task['assigned_by'] !== (int)$userId)) {
             return ['success' => false, 'error' => 'Unauthorized'];
