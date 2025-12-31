@@ -23,6 +23,15 @@ if (in_array($loggedRole, ['Manager', 'Super Admin', 'Admin'])) {
     $tasksAssignedByMe = $taskService->getTasksAssignedBy($loggedUserId);
 }
 
+// load comments
+$taskComments = [];
+foreach ($tasksAssignedToMe as $t) {
+    $taskComments[$t['id']] = $taskService->getCommentsForTask($t['id']);
+}
+foreach ($tasksAssignedByMe as $t) {
+    $taskComments[$t['id']] = $taskService->getCommentsForTask($t['id']);
+}
+
 $today = date('Y-m-d');
 
 $pagetitle = 'Tasks';
@@ -38,10 +47,8 @@ require_once '../../includes/header.php';
             <a href="add.php" class="btn btn-primary btn-sm">
                 + Assign Task
             </a>
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
-                <a href="deleted.php" class="btn btn-primary btn-sm">Deleted Tasks</a><?php endif; ?>
-            <?php if (in_array($_SESSION['user']['role_name'], ['Super Admin', 'Admin', 'Manager'])): ?>
-                <a href="overview.php" class="btn btn-primary btn-sm">All tasks</a><?php endif; ?>
+            <a href="deleted.php" class="btn btn-primary btn-sm">Deleted Tasks</a>
+            <a href="overview.php" class="btn btn-primary btn-sm">All tasks</a>
         </div>
     <?php endif; ?>
 
@@ -145,6 +152,25 @@ require_once '../../includes/header.php';
                                                 </td>
 
                                                 <td><?= date('d M Y, h:i A', strtotime($task['created_at'])) ?></td>
+                                                
+                                                <td>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-info view-task"
+                                                        data-title="<?= htmlspecialchars($task['title']) ?>"
+                                                        data-desc="<?= htmlspecialchars($task['description']) ?>"
+                                                        data-start="<?= date('d M Y', strtotime($task['start_date'])) ?>"
+                                                        data-end="<?= date('d M Y', strtotime($task['end_date'])) ?>"
+                                                        data-status="<?= htmlspecialchars($task['status']) ?>"
+                                                        data-assigned="<?= htmlspecialchars($task['assigned_by_email']) ?>"
+                                                        data-comments='<?= json_encode($taskComments[$task['id']]) ?>'>
+                                                        View
+                                                    </button>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-secondary comment-task"
+                                                        data-task="<?= $task['id'] ?>">
+                                                        Comment
+                                                    </button>
+                                                </td>
                                             </tr>
 
                                         <?php endforeach; ?>
@@ -237,8 +263,26 @@ require_once '../../includes/header.php';
                                             </td>
 
                                             <td><?= date('d M Y, h:i A', strtotime($task['created_at'])) ?></td>
-
+                                            
                                             <td>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-info view-task"
+                                                    data-title="<?= htmlspecialchars($task['title']) ?>"
+                                                    data-desc="<?= htmlspecialchars($task['description']) ?>"
+                                                    data-start="<?= date('d M Y', strtotime($task['start_date'])) ?>"
+                                                    data-end="<?= date('d M Y', strtotime($task['end_date'])) ?>"
+                                                    data-status="<?= htmlspecialchars($task['status']) ?>"
+                                                    data-assigned="<?= htmlspecialchars($task['assigned_by_email']) ?>"
+                                                    data-comments='<?= json_encode($taskComments[$task['id']]) ?>'>
+                                                    View
+                                                </button>
+
+                                                <button type="button"
+                                                    class="btn btn-sm btn-secondary comment-task"
+                                                    data-task="<?= $task['id'] ?>">
+                                                    Comment
+                                                </button>
+
                                                 <a href="edit.php?id=<?= $task['id'] ?>"
                                                     class="btn btn-sm btn-warning">
                                                     Edit
@@ -266,6 +310,84 @@ require_once '../../includes/header.php';
 
 </div>
 
+<!-- View Task Modal -->
+<div class="modal fade" id="userTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">Task Details</h6>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="uTitle"></span></p>
+                <p><strong>Assigned By:</strong> <span id="uAssigned"></span></p>
+                <p><strong>Description:</strong> <span id="uDesc"></span></p>
+                <p><strong>Start:</strong> <span id="uStart"></span></p>
+                <p><strong>End:</strong> <span id="uEnd"></span></p>
+                <p>
+                    <strong>Status:</strong>
+                    <span id="uStatus" class="badge badge-secondary"></span>
+                </p>
+                <hr>
+                <p><strong>Comments:</strong></p>
+                <div id="uComments">
+                    <small class="text-muted">No comments yet.</small>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <form method="POST" action="add_comments.php">
+
+                <div class="modal-header bg-secondary text-white">
+                    <h6 class="modal-title">Add Comment</h6>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="task_id" id="commentTaskId">
+
+                    <textarea name="comment"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Write your comment..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary btn-sm">
+                        Save Comment
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
 <?php require_once '../../includes/footer.php'; ?>
 
 <script>
@@ -279,7 +401,57 @@ require_once '../../includes/header.php';
             $('#assignedByMeTable').DataTable();
         }
 
+        // View Task Handler
+        $('.view-task').on('click', function() {
+            const status = $(this).data('status');
+            const comments = $(this).data('comments') || [];
+
+            $('#uTitle').text($(this).data('title'));
+            $('#uAssigned').text($(this).data('assigned'));
+            $('#uDesc').text($(this).data('desc') || '-');
+            $('#uStart').text($(this).data('start'));
+            $('#uEnd').text($(this).data('end'));
+            $('#uStatus').text(status);
+
+            $('#uStatus')
+                .removeClass('badge-success badge-warning badge-secondary badge-danger')
+                .addClass(
+                    status === 'Completed' ? 'badge-success' :
+                    status === 'In Progress' ? 'badge-warning' :
+                    'badge-secondary'
+                );
+
+            if (comments.length === 0) {
+                $('#uComments').html('<small class="text-muted">No comments yet.</small>');
+            } else {
+                let html = '<ul class="list-group list-group-flush">';
+                comments.forEach(c => {
+                    html += `
+                        <li class="list-group-item px-0">
+                            <strong>${c.email}</strong><br>
+                            ${c.comment}
+                            <div class="small text-muted">
+                                ${c.created_at}
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                $('#uComments').html(html);
+            }
+
+            $('#userTaskModal').modal('show');
+        });
+
+        // Comment Task Handler
+        $('.comment-task').on('click', function() {
+            const taskId = $(this).data('task');
+            $('#commentTaskId').val(taskId);
+            $('#commentModal').modal('show');
+        });
+
     });
+
     document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.delete-task').forEach(btn => {

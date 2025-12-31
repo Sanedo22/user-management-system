@@ -196,9 +196,11 @@ class TaskService
     public function getTasksForUser($userId)
     {
         $sql = "SELECT t.*, 
-                       u.email AS assigned_by_email
+                       u1.email AS assigned_by_email,
+                       u2.email AS assigned_to_email
                 FROM tasks t
-                JOIN users u ON u.id = t.assigned_by
+                JOIN users u1 ON u1.id = t.assigned_by
+                JOIN users u2 ON u2.id = t.assigned_to
                 WHERE t.assigned_to = ?
                 AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
@@ -212,9 +214,11 @@ class TaskService
     public function getTasksAssignedBy($adminId)
     {
         $sql = "SELECT t.*, 
-                       u.email AS assigned_to_email
+                       u1.email AS assigned_by_email,
+                       u2.email AS assigned_to_email
                 FROM tasks t
-                JOIN users u ON u.id = t.assigned_to
+                JOIN users u1 ON u1.id = t.assigned_by
+                JOIN users u2 ON u2.id = t.assigned_to
                 WHERE t.assigned_by = ?
                 AND t.deleted_at IS NULL
                 ORDER BY t.created_at DESC";
@@ -287,9 +291,9 @@ class TaskService
             return ['success' => false, 'error' => 'Comment cannot be empty'];
         }
 
-        // Security: ensure task belongs to user
+        // Security: ensure task belongs to user (Assignee OR Assigner)
         $task = $this->getTaskById($taskId);
-        if (!$task || (int)$task['assigned_to'] !== (int)$userId) {
+        if (!$task || ((int)$task['assigned_to'] !== (int)$userId && (int)$task['assigned_by'] !== (int)$userId)) {
             return ['success' => false, 'error' => 'Unauthorized'];
         }
 
