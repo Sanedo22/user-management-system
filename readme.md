@@ -20,7 +20,20 @@ A comprehensive **Role-Based Access Control (RBAC)** system with user management
 
 ---
 
-## 🛠️ Tech Stack
+## � Screenshots
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Users Management
+![Users Page](screenshots/users-page.png)
+
+### Tasks Overview
+![Tasks Page](screenshots/tasks-page.png)
+
+---
+
+## �🛠️ Tech Stack
 
 **Backend:** PHP 8.4 (OOP) • MySQL • PDO  
 **Frontend:** Bootstrap 5 • jQuery • SweetAlert2 • Font Awesome  
