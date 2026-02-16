@@ -104,19 +104,9 @@ user_management-system/
 ✅ 2FA Support  
 ✅ Environment Variables  
 
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file
-
----
-
 ## 👨‍💻 Author
 
-**Dhruv Ppatni**  
+**Dhruv Patni**  
 GitHub: [@Sanedo22](https://github.com/Sanedo22)
 
 ---
-
-<p align="center">Made with ❤️ using PHP</p>
