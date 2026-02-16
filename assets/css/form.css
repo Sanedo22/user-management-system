@@ -1,0 +1,135 @@
+/* =========================
+   FORM PAGE BASE
+========================= */
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.form-container {
+    max-width: 520px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+/* =========================
+   CARD
+========================= */
+.form-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   TITLE
+========================= */
+.form-card h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* =========================
+   FORM GROUP
+========================= */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52,152,219,0.15);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: #fff;
+}
+
+.btn.secondary {
+    background: #ecf0f1;
+    color: #2c3e50;
+}
+
+.btn:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+/* =========================
+   ERRORS & SUCCESS
+========================= */
+.alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.alert.error {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+.alert.success {
+    background: #eafaf1;
+    color: #27ae60;
+}
+
+/* =========================
+   SMALL HELP TEXT
+========================= */
+.help-text {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+}

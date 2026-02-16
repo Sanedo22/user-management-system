@@ -1,0 +1,39 @@
+# Environment Configuration
+.env
+
+# User Uploads
+/admin/uploads/
+
+# IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+access_log
+
+# Temporary Files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Composer (if you add it later)
+/vendor/
+composer.lock
+
+# Node modules (if you add frontend build tools)
+node_modules/
+package-lock.json
+
+# Keep example env file
+!.env.example
